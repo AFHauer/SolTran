@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # SolTran
 Solute Transport Modeling in R Shny Application
 
@@ -10,7 +9,3 @@ This work largely works off models developed by Robert Runkel at the USGS in Den
 and Robert Hensley and Matthew Cohen at the University of Florida.
 
 This web application is developed in R shiny.
-=======
-# Solute Transport Model
- Solute Transport Modeling in R Shny Application
->>>>>>> 3175e54cb041abd2272b6d708afc8b64a50a6813
