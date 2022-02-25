@@ -14,6 +14,7 @@ if (interactive()) {
   
   # read in the test data, will be replaced with model function
   trace_model_2020 <- read_csv("data/conserv_trace_model_out.csv")
+  do_model_2020 <- read_csv("data/do_model_out.csv")
   
   shinyApp(
     ui = dashboardPage(
@@ -45,7 +46,9 @@ if (interactive()) {
             h1("Model Parameters"),
             h2("Template Download"),
             p("Start by downloading and completing a data template. To ensure that the program will work properly be sure to maintain headings, column formats, and .csv naming conventions."),
-            # Template Download
+            
+            ## Template Download ##
+            
             fluidRow(
               bs4Card(
                 title = "Template Download",
@@ -66,7 +69,9 @@ if (interactive()) {
                 tableOutput('template_head')
               )
             ), # fluidRow close
-            # Data upload
+            
+            ## Data upload ##
+            
             h2('Template Data Upload'),
             p('Upload data stored in the templates to the proper data upload section.'),
             fluidRow(
@@ -111,8 +116,8 @@ if (interactive()) {
               ), # column close
             ), # fluidRow close
             
+            ## Model Parameters ##
             
-            # Model Parameters
             h2('Model Parameters'),
             p('Input the model parameters for the section of the river you wish to investigate.'),
             fluidRow(
@@ -360,20 +365,63 @@ if (interactive()) {
                      
               ), # column close
             ), # fluidRow
-            # DO Output
+            
+            ## DO Output ##
+            
             h2('Dissolved Oxygen Diel Model Output'),
             fluidRow(
+              
+              # do Model distance
               bs4Card(
-                #Card info
-                title = "Disolved Oxygen Diel Model",
+                # Card info
+                title = "Select Model Distance from Upstream Value",
                 collapsible = FALSE,
                 closable = FALSE,
-                width = 12,
+                width = 4,
+                selectInput('do_distance', 'Model River Distance (in m)', 
+                            choices = colnames(do_model_2020)[c(3,4,5,6)]),
+                uiOutput('do_slide'),
+                p(HTML('<b>Model Statistics</b>')),
+                tableOutput('do_stats')
+              ),
+              
+              # do model output
+              bs4Card(
+                #Card info
+                title = "Dissolved Oxygen Diel Model",
+                collapsible = FALSE,
+                closable = FALSE,
+                width = 8,
                 plotOutput('do_model')
               )
-              
-              
+      
             ), # fluidRow close
+            
+            fluidRow(
+              # Graphic of Model Error
+              bs4Card(
+                # Card info
+                title = "Do Model Observed by Predicted",
+                collapsible = FALSE,
+                closable = FALSE,
+                width = 6,
+                plotOutput('domodelpred')
+              ),
+              
+              # Model Prediction Statistics and Error
+              bs4Card(
+                # Card info
+                title = "DO Model Prediction Statistics",
+                collapsible = FALSE,
+                closable = FALSE,
+                width = 6,
+                p(HTML("<b>Sum of Error Squared</b>")),
+                textOutput('do_model_error'),
+                p(HTML("<b>R Squared</b>")),
+                textOutput('do_model_r_square')
+              )
+            )
+            
           ), # tabItem close
           
           ## Tab item Nitrate ##
@@ -567,8 +615,6 @@ if (interactive()) {
           theme_bw()
       })
       
-      
-      
       # Conservative Tracer Summary Statistics
       output$con_trace_sum <- renderPrint({
         summary(trace_model_2020[input$distance])
@@ -633,7 +679,8 @@ if (interactive()) {
                     timeFormat = "%F %T", 
                     min = as.POSIXct(min_do_dt()),
                     max = as.POSIXct(max_do_dt()),
-                    value = c(min_do_dt(), min_do_dt() + (.25*(max_do_dt()-min_do_dt()))))
+                    value = c(min_do_dt(), min_do_dt() + (.25*(max_do_dt()-min_do_dt()))),
+                    step = 1)
       )
       
       # plot PAR
@@ -666,7 +713,8 @@ if (interactive()) {
                     timeFormat = "%F %T", 
                     min = as.POSIXct(min_do_dt()),
                     max = as.POSIXct(max_do_dt()),
-                    value = c(min_do_dt(), min_do_dt() + (.25*(max_do_dt()-min_do_dt()))))
+                    value = c(min_do_dt(), min_do_dt() + (.25*(max_do_dt()-min_do_dt()))),
+                    step = 1)
       ) 
       
       # plot GPP
@@ -723,14 +771,85 @@ if (interactive()) {
           select("Temperature (C)")
       })
       
+      # create Do model slider with renderUI
+      output$do_slide <- renderUI(
+        sliderInput('do_time_sum', 'DO Time Input:', 
+                    timeFormat = "%F %T", 
+                    min = as.POSIXct(min_do_dt()),
+                    max = as.POSIXct(max_do_dt()),
+                    value = c(min_do_dt(), min_do_dt() + (.25*(max_do_dt()-min_do_dt()))),
+                    step = 1)
+      ) 
+      
       # do model plot output
       output$do_model <- renderPlot({
         do_us_ds() %>% 
           ggplot()+
-          geom_line(aes(x=datetime, y=us_station_obs), color="darkgreen")+
+          geom_line(aes(x=datetime, y=us_station_obs), color="green")+
           geom_line(aes(x=datetime, y=ds_station_obs), color="blue")+
-          labs(x="Datetime", y="Dissolved Oxygen")+
+          geom_line(data = do_model_2020, aes(x= datetime, 
+                                              y = do_model_2020[[input$do_distance]]),
+                    color = "red")+
+          geom_vline(aes(xintercept=input$do_time_sum[1]), color="red")+
+          geom_vline(aes(xintercept=input$do_time_sum[2]), color="red")+
+          labs(x="Datetime", y="Dissolved Oxygen", 
+               title = "Dissolved Oxygen Model", 
+               subtitle = "Up river observations in Green, Down river observations in Blue, Model in Red")+
           theme_classic()
+      })
+      
+      # DO Model Stats for DO Summary input
+      output$do_stats <- renderTable(digits = 3,{
+        
+        x = input$do_distance
+        
+        # select the range of data to look at
+        y <- do_model_2020 %>% 
+          filter(as.POSIXct(do_model_2020$datetime) >= input$do_time_sum[1] 
+                 & as.POSIXct(do_model_2020$datetime) <= input$do_time_sum[2]) %>% 
+          select(x)
+        
+        # unlist the stored y data and find max, min, mean
+        y <- as.numeric(unlist(y))
+        a = max(y)
+        b = min(y)
+        c = mean(y)
+        
+        # store in tibble to be called as rendered table
+        do_stats <- tibble("Max" = a, "Min" = b, "Mean" = c)
+        return(do_stats)
+      })
+      
+      # Plot of Model prediction vs Observed Downstream value
+      output$domodelpred <- renderPlot({
+        do_us_ds() %>% 
+          left_join(do_model_2020) %>%  
+          ggplot(aes(x=ds_station_obs, y = do_model_2020[[input$do_distance]])) +
+          geom_point() +
+          geom_smooth(method = "lm") +
+          labs(x="Observed", y="Predicted", 
+               title = "Dissolved Oxygen Observed by Predicted") +
+          theme_bw()
+      })
+      
+      # Model predicted vs observed summary stats
+      output$do_model_error <- renderPrint({
+        obs <- do_us_ds() %>% 
+          select(ds_station_obs)
+        pred <- do_model_2020 %>% 
+          select(input$do_distance)
+        SSE <- sum((obs-pred)^2)
+        print(round(SSE, 2))
+      })
+      
+      output$do_model_r_square <- renderPrint({
+        obs <- do_us_ds() %>% 
+          select(ds_station_obs)
+        pred <- do_model_2020 %>% 
+          select(input$do_distance)
+        df <- data.frame(obs = unlist(obs), pred = unlist(pred))
+        fit <- lm(obs~pred, data = df)
+        print(summary(fit)$r.squared)
       })
       
       ## Nitrate Tab code
