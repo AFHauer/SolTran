@@ -180,7 +180,7 @@ if (interactive()) {
             tabName = "tracer",
             h1("Conservative Tracer"),
             
-            # Model Output
+            ## Model Output ##
             h2('Model Output'),
             fluidRow(
               column(4,
@@ -221,9 +221,10 @@ if (interactive()) {
               ),
             ), #FluidRow close
             
-            # Model Prediction Statistics
+            ## Model Prediction Statistics ##
             h2('Conservative Tracer Model Prediction Statistics'),
             p('Set Model River Distance to Downstream Observed Location to test model output.'),
+            
             fluidRow(
               # Graphic of Model Error
               bs4Card(
@@ -247,9 +248,9 @@ if (interactive()) {
                 p(HTML("<b>R Squared</b>")),
                 textOutput('model_r_square')
               )
-              
             ), # fluidRow close
-          ), # tabItem close
+          
+            ), # tabItem close
           
           ## Tab item dissolved oxygen ##
           ###############################
@@ -257,8 +258,10 @@ if (interactive()) {
           tabItem(
             tabName = "do",
             h1("Dissolved Oxygen"),
+            
+            # Reactive DO Parameters
             fluidRow(
-              # Reactive DO Parameters
+              
               bs4Card(
                 # Card info
                 title = "DO Reactive Parameters",
@@ -272,10 +275,12 @@ if (interactive()) {
                 verbatimTextOutput("test"),
                 actionButton('do_slider_refresh', 'Refresh')
               ),
-            ), #fluidRow close
             
-            # PAR Output
+              ), #fluidRow close
+            
+            ## PAR Output ##
             h2('Photosynthetically Active Radiation (PAR)'),
+            
             fluidRow(
               column(4,
                      # PAR Summary
@@ -306,8 +311,9 @@ if (interactive()) {
             ),
             
             
-            # GPP Output
+            ## GPP Output ##
             h2('Gross Primary Production (GPP)'),
+            
             fluidRow(
               column(4,
                      # GPP Summary
@@ -322,7 +328,7 @@ if (interactive()) {
                        tableOutput('gpp_stats')
                        
                      ),
-              ),
+              ), #column close
               column(8,
                      # Gross Primary Production
                      bs4Card(
@@ -333,11 +339,12 @@ if (interactive()) {
                        width = 12,
                        plotOutput('gpp')
                      ),
-              ),
+              ), #column close
             ),
             
-            # Temp Output
+            ## Temp Output ##
             h2('Water Tempurature (C)'),
+            
             fluidRow(
               column(4,
                      # Temperature Summary
@@ -397,6 +404,7 @@ if (interactive()) {
       
             ), # fluidRow close
             
+            # DO Model predictions
             fluidRow(
               # Graphic of Model Error
               bs4Card(
@@ -832,7 +840,7 @@ if (interactive()) {
           theme_bw()
       })
       
-      # Model predicted vs observed summary stats
+      # DO Model predicted vs observed summary stats
       output$do_model_error <- renderPrint({
         obs <- do_us_ds() %>% 
           select(ds_station_obs)
@@ -842,6 +850,7 @@ if (interactive()) {
         print(round(SSE, 2))
       })
       
+      # DO model error statistics
       output$do_model_r_square <- renderPrint({
         obs <- do_us_ds() %>% 
           select(ds_station_obs)
