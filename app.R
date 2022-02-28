@@ -291,10 +291,8 @@ if (interactive()) {
                              value = 0.0006)
                 ) # close column
                 ), # close fluidRow
-                sliderInput('kpp', 'kpp Reactive Input:',
-                                  min = 0.0004,
-                                  max = 0.0006,
-                                  value = 0.0005)
+                uiOutput('kpp_slider'),
+                actionButton('kpp_update', 'Refresh Max/Min')
               ),
               
               
@@ -710,7 +708,20 @@ if (interactive()) {
       
       # DO Model Parameters
       
+      kpp_min <- eventReactive(input$kpp_update, {
+        as.numeric(input$kpp_min)
+      })
       
+      kpp_max <- eventReactive(input$kpp_update, {
+        as.numeric(input$kpp_max)
+      })
+      
+      output$kpp_slider <- renderUI(
+        sliderInput('kpp', 'kpp Slider',
+                    min = kpp_min(), 
+                    max = kpp_max(),
+                    value = kpp_min() +(.5*(kpp_max()-kpp_min())))
+      )
       
       # Par
       
