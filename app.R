@@ -264,19 +264,46 @@ if (interactive()) {
               
               bs4Card(
                 # Card info
-                title = "DO Reactive Parameters",
+                title = "Run Uploaded DO Data",
                 collapsible = FALSE,
                 closable = FALSE,
-                width = 4,
-                numericInput('kpp', 
-                             'Primary Production Constant (mg-O/J): ', 
-                             value = 0.0005),
-                p("Refresh Sliders to match uploaded Dissolved Oxygen data."),
-                verbatimTextOutput("test"),
+                width = 2,
+                p("Run DO Data."),
                 actionButton('do_slider_refresh', 'Refresh')
+                
               ),
+              bs4Card(
+                title = "DO Model Parameters",
+                width = 4,
+                collapsible = FALSE,
+                closable = FALSE,
+                p('Primary production rate constant'),
+                fluidRow(
+                column(6,
+                
+                numericInput('kpp_min', 
+                             'kpp min:', 
+                             value = 0.0004),
+                ), # close column
+                column(6,
+                numericInput('kpp_max',
+                             'kpp max:', 
+                             value = 0.0006)
+                ) # close column
+                ), # close fluidRow
+                sliderInput('kpp', 'kpp Reactive Input:',
+                                  min = 0.0004,
+                                  max = 0.0006,
+                                  value = 0.0005)
+              ),
+              
+              
+            ), #fluidRow close
             
-              ), #fluidRow close
+            fluidRow(
+              # column close
+              
+            ), # fluidRow close
             
             ## PAR Output ##
             h2('Photosynthetically Active Radiation (PAR)'),
@@ -296,7 +323,7 @@ if (interactive()) {
                        tableOutput('par_stats')
                        
                      ),
-              ),
+              ), # column close
               column(8,
                      # PAR
                      bs4Card(
@@ -307,8 +334,8 @@ if (interactive()) {
                        width = 12,
                        plotOutput('par')
                      ),
-              ),
-            ),
+              ), # column close
+            ), # fluidRow close
             
             
             ## GPP Output ##
@@ -340,7 +367,7 @@ if (interactive()) {
                        plotOutput('gpp')
                      ),
               ), #column close
-            ),
+            ), # fluidRow close
             
             ## Temp Output ##
             h2('Water Tempurature (C)'),
@@ -467,7 +494,7 @@ if (interactive()) {
             text = "Model Parameters",
             tabName = "parameters",
             selected = TRUE,
-            icon = icon('gears', lib = 'font-awesome')
+            icon = icon('gears', lib = 'font-awesome', verify_fa = FALSE)
           ),
           
           # menu item conservative tracer
@@ -475,21 +502,21 @@ if (interactive()) {
             text = "Conservative Tracer",
             tabName = "tracer",
             selected = FALSE,
-            icon = icon('fill-drip', lib = 'font-awesome')
+            icon = icon('fill-drip', lib = 'font-awesome', verify_fa = FALSE)
           ),
           
           # menu item dissolved oxygen
           menuItem(
             text = "Dissolved Oxygen",
             tabName = "do",
-            icon = icon('circle', lib = 'font-awesome')
+            icon = icon('circle', lib = 'font-awesome', verify_fa = FALSE)
           ),
           
           # menu item nitrate
           menuItem(
             text = "Nitrate",
             tabName = "no3",
-            icon = icon('seedling', lib = 'font-awesome')
+            icon = icon('seedling', lib = 'font-awesome', verify_fa = FALSE)
           )
         ) # sidebarMenu close
       ), # dashboardSidebar close
@@ -678,6 +705,12 @@ if (interactive()) {
       step_do_dt <- eventReactive(input$do_slider_refresh, {
         (do_us_ds()$time_min[2]-do_us_ds()$time_min[1])*60
       })
+      
+      
+      
+      # DO Model Parameters
+      
+      
       
       # Par
       
