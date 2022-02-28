@@ -1,5 +1,5 @@
 # SolTran
-Solute Transport Modeling in R Shny Application
+Solute Transport Modeling in R Shiny Application
 
 This is a current work in progress for my MSBA Capstone Project at the University of Montana. 
 The primary idea is to develop a web application which allows for the uploading of hydrologic, 
