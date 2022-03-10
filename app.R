@@ -12,11 +12,6 @@ if (interactive()) {
   library(lubridate)
   library(readr)
   
-  # read in the test data, will be replaced with model function
-  trace_model_2020 <- read_csv("data/conserv_trace_model_out.csv")
-  do_model_2020 <- read_csv("data/do_model_out.csv")
-  nitrate_model_2020 <- read_csv("data/nitrate_model_out.csv")
-  
   shinyApp(
     ui = dashboardPage(
       
@@ -117,6 +112,50 @@ if (interactive()) {
               ) # column close
             ), # fluidRow close
             
+            
+            ## Model Data Upload ##
+            
+            h2('Model Data Upload'),
+            p('Upload model data stored in the model templates to the proper data upload section.'),
+            fluidRow(
+              column(width = 4,
+                     
+                     bs4Card(
+                       title = "Solute Model Upload",
+                       width = 12,
+                       closable = FALSE,
+                       fileInput('solute_model_upload', 
+                                 'Browse for CSV Solute Model Data', 
+                                 accept = ".csv")
+                     )
+                     
+              ), # column close
+              
+              column(width = 4,
+                     
+                     bs4Card(
+                       title = "Dissolved Oxygen Model Upload",
+                       width = 12,
+                       closable = FALSE,
+                       fileInput('do_model_upload', 
+                                 'Browse for CSV DO Model Data', 
+                                 accept = ".csv")
+                     )   
+              ), # column close
+              
+              column(width = 4,
+                     
+                     bs4Card(
+                       title = "Nitrate Model Upload",
+                       width = 12,
+                       closable = FALSE,
+                       fileInput('nitrate_model_upload', 
+                                 'Browse for CSV Nitrate Model Data', 
+                                 accept = ".csv")
+                     )   
+              ) # column close
+            ), # fluidRow close
+            
             ## Model Parameters ##
             
             h2('Model Parameters'),
@@ -127,7 +166,6 @@ if (interactive()) {
                      bs4Card(
                        # Card info
                        title = "Model Grid",
-                       collapsible = FALSE,
                        closable = FALSE,
                        width = 12,
                        p('Input the distance between the upstream and downstream measurements which you are investigating within the model.'),
@@ -146,7 +184,6 @@ if (interactive()) {
                      bs4Card(
                        # Card info
                        title = "Measured Model Parameters",
-                       collapsible = FALSE,
                        closable = FALSE,
                        width = 12,
                        p('Input the average depth in meters for the length of river you are modeling. Input the average river discharge for the time you are modeling.'),
@@ -160,7 +197,6 @@ if (interactive()) {
                      bs4Card(
                        # Card info
                        title = "Calculated Model Parameters",
-                       collapsible = FALSE,
                        closable = FALSE,
                        width = 12,
                        numericInput('area', 'Channel Area (in m^2)', value = 10),
@@ -189,22 +225,19 @@ if (interactive()) {
                      bs4Card(
                        # Card info
                        title = "Select Model distance from Upstream Value",
-                       collapsible = FALSE,
                        closable = FALSE,
                        width = 12,
-                       selectInput('distance', 'Model River Distance (in m)', 
-                                   choices = colnames(trace_model_2020)[-1])
+                       uiOutput('select_dis_tracer')
                      ),
                      
                      # Model Summary Statistics
                      bs4Card(
                        # Card info
                        title = "Model Summary Statistics",
-                       collapsible = FALSE,
                        closable = FALSE,
                        width = 12,
                        # box output
-                       verbatimTextOutput("con_trace_sum")
+                       tableOutput("con_trace_sum")
                      )
                      
                      
@@ -215,7 +248,6 @@ if (interactive()) {
                      bs4Card(
                        # Card info
                        title = 'Model Output of Conservative Tracer',
-                       collapsible = FALSE,
                        closable = FALSE,
                        width = 12,
                        # Graph selection and output
@@ -234,7 +266,6 @@ if (interactive()) {
               bs4Card(
                 # Card info
                 title = "Model Observed by Predicted",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 6,
                 plotOutput('modelpred'),
@@ -245,24 +276,27 @@ if (interactive()) {
               bs4Card(
                 # Card info
                 title = "Model Prediction Statistics",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 6,
                 p(HTML("<b>Sum of Error Squared</b>")),
                 textOutput('model_error'),
+                p(HTML("<br>")),
                 p(HTML("<b>R Squared</b>")),
                 textOutput('model_r_square')
               )
             ), # fluidRow close
             
+            
+              h2('Conservative Tracer Model Table'),
+              p('Select model distance from upstream boundry in the Model River Distance selection interface to see other modeled outputs in this table.'),
             fluidRow(
-              
               # # Conservative Tracer Table
               bs4Card(
                 title = "Conservative Tracer Model Table",
-                collapsible = TRUE,
                 closable = FALSE,
                 width = 8,
+                downloadButton('download_solutetable', 'Download Table'),
+                p(HTML("<br>")),
                 dataTableOutput('tracer_model_table')
               )
             ) # fluidRow close
@@ -281,19 +315,17 @@ if (interactive()) {
               bs4Card(
                 # Card info
                 title = "Run Uploaded DO Data",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 2,
-                p("Run DO Data."),
+                p("Run DO Data. Refresh the Dissolved Oxygen Data after data upload."),
                 actionButton('do_slider_refresh', 'Refresh')
                 
               ),
               bs4Card(
                 title = "DO Model Parameters",
                 width = 4,
-                collapsible = FALSE,
                 closable = FALSE,
-                p('Primary production rate constant'),
+                p('Primary Production Rate Constant'),
                 fluidRow(
                   column(6,
                          
@@ -308,6 +340,7 @@ if (interactive()) {
                   ) # close column
                 ), # close fluidRow
                 uiOutput('kpp_slider'),
+                p('Refreshing the Primary Production Rate Constant will update the Gross Primary Production Value.'),
                 actionButton('kpp_update', 'Refresh Max/Min')
               ),
               
@@ -321,13 +354,18 @@ if (interactive()) {
               # PAR Summary
               bs4Card(
                 # Card info
-                title = "PAR Summary",
-                collapsible = FALSE,
+                title = "PAR Input",
                 closable = FALSE,
-                width = 4,
-                p('Adjust the upper and lower bounds of the slider to measure statistics for that section in time.'),
-                uiOutput("par_slide"),
-                p(HTML('<b>PAR Section Statistics</b>')),
+                width = 6,
+                p('Adjust the upper and lower bounds of the slider to measure statistics for that selection in time.'),
+                uiOutput("par_slide")
+              ),
+              
+              bs4Card(
+                # Card info
+                title = "PAR Statistics",
+                closable = FALSE,
+                width = 6,
                 tableOutput('par_stats')
               ),
               
@@ -335,11 +373,22 @@ if (interactive()) {
               bs4Card(
                 # Card info
                 title = "PAR",
-                collapsible = FALSE,
                 closable = FALSE,
-                width = 8,
+                width = 6,
                 plotOutput('par'),
+                p('PAR Figure displays the entirety of the uploaded PAR data. Adjusting the upper and lower bound of the PAR Input Slider will adjust the red indicator lines. These red verticle lines display the selection of data for statistical read out and the Detail View.'),
                 downloadButton('download_par', 'Download Plot')
+              ),
+              
+              # PAR
+              bs4Card(
+                # Card info
+                title = "PAR Detail View",
+                closable = FALSE,
+                width = 6,
+                plotOutput('par_zoom'),
+                p('PAR Detail View. Adjust the upper and lower bounds on the PAR Input Slider to adjust the view selection.'),
+                downloadButton('download_par_zoom', 'Download Plot')
               )
               
             ), # fluidRow close
@@ -347,34 +396,49 @@ if (interactive()) {
             
             ## GPP Output ##
             h2('Gross Primary Production (GPP)'),
-            
+            p('GPP is a function of the Primary Production Rate Constant times Par divided by depth.'),
+            p('Be sure to calculate each measure to determine GPP'),
             fluidRow(
-              column(4,
                      # GPP Summary
                      bs4Card(
                        # Card info
-                       title = "GPP Summary",
-                       collapsible = FALSE,
+                       title = "GPP Input",
                        closable = FALSE,
-                       width = 12,
-                       uiOutput('gpp_slide'),
-                       p(HTML('<b>GPP Section Statistics</b>')),
-                       tableOutput('gpp_stats')
-                       
+                       width = 6,
+                       p('Adjust the upper and lower bounds of the slider to measure statistics for that section in time.'),
+                       uiOutput('gpp_slide')
                      ),
-              ), #column close
-              column(8,
+                     
+                     bs4Card(
+                       # Card info
+                       title = "GPP Statistics",
+                       closable = FALSE,
+                       width = 6,
+                       tableOutput('gpp_stats')
+                     ),
+                     
                      # Gross Primary Production
                      bs4Card(
                        # Card info
                        title = "Gross Primary Production",
-                       collapsible = FALSE,
                        closable = FALSE,
-                       width = 12,
+                       width = 6,
                        plotOutput('gpp'),
+                       p('GPP Figure displays the entirety of the GPP data. Adjusting the upper and lower bound of the GPP Input Slider will adjust the red indicator lines. These red verticle lines display the selection of data for statistical read out and the Detail View.'),
                        downloadButton('download_gpp', 'Download Plot')
                      ),
-              ) #column close
+                     
+                     # Gross Primary Production
+                     bs4Card(
+                       # Card info
+                       title = "Gross Primary Production Detail View",
+                       closable = FALSE,
+                       width = 6,
+                       plotOutput('gpp_zoom'),
+                       p('GPP Detail View. Adjust the upper and lower bounds on the GPP Input Slider to adjust the view selection.'),
+                       downloadButton('download_gpp_zoom', 'Download Plot')
+                     )
+                     
             ), # fluidRow close
             
             ## Temp Output ##
@@ -386,7 +450,6 @@ if (interactive()) {
                      bs4Card(
                        # Card info
                        title = "Temperature Summary",
-                       collapsible = FALSE,
                        closable = FALSE,
                        width = 12,
                        uiOutput('temp_slide'),
@@ -399,7 +462,6 @@ if (interactive()) {
                      bs4Card(
                        # Card info
                        title = "Temperature",
-                       collapsible = FALSE,
                        closable = FALSE,
                        width = 12,
                        plotOutput('temp'),
@@ -418,11 +480,9 @@ if (interactive()) {
               bs4Card(
                 # Card info
                 title = "Select Model Distance from Upstream Value",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 4,
-                selectInput('do_distance', 'Model River Distance (in m)', 
-                            choices = colnames(do_model_2020)[c(3,4,5,6)]),
+                uiOutput('select_dis_do'),
                 uiOutput('do_slide'),
                 p(HTML('<b>Model Statistics</b>')),
                 tableOutput('do_stats')
@@ -432,7 +492,6 @@ if (interactive()) {
               bs4Card(
                 #Card info
                 title = "Dissolved Oxygen Diel Model",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 8,
                 plotOutput('do_model'),
@@ -442,12 +501,13 @@ if (interactive()) {
             ), # fluidRow close
             
             # DO Model predictions
+            h2('Dissolved Oxygen Model Prediction Statistics'),
+            p('Set Model River Distance to Downstream Observed Location to test model output.'),
             fluidRow(
               # Graphic of Model Error
               bs4Card(
                 # Card info
                 title = "DO Model Observed by Predicted",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 6,
                 plotOutput('domodelpred'),
@@ -458,24 +518,26 @@ if (interactive()) {
               bs4Card(
                 # Card info
                 title = "DO Model Prediction Statistics",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 6,
                 p(HTML("<b>Sum of Error Squared</b>")),
                 textOutput('do_model_error'),
+                p(HTML("<br>")),
                 p(HTML("<b>R Squared</b>")),
                 textOutput('do_model_r_square')
               )
             ),
             
+            # DO Model Table Output
+            h2('Dissolved Oxygen Model Table'),
+            p('Select model distance from upstream boundry in the Model River Distance selection interface to see other modeled outputs in this table.'),
             fluidRow(
-              
-              # DO Model Table Output
               bs4Card(
                 title = "Dissolved Oxygen Model Table",
-                collapsible = TRUE,
                 closable = FALSE,
                 width = 12,
+                downloadButton('download_dotable', 'Download Table'),
+                p(HTML("<br>")),
                 dataTableOutput('do_model_table')
               )
             ) # Table fluidRow Close
@@ -493,8 +555,7 @@ if (interactive()) {
               bs4Card(
                 # Card info
                 # Card info
-                title = "Run Uploaded Nitrate Data",
-                collapsible = FALSE,
+                title = "Run Uploaded Nitrate Data", 
                 closable = FALSE,
                 width = 2,
                 p("Run Nitrate Data."),
@@ -507,11 +568,9 @@ if (interactive()) {
               # Nitrate Model input
               bs4Card(
                 title = 'Select Model Distance from Upstream Value',
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 4,
-                selectInput('nitrate_distance', 'Model River Distance (in m)', 
-                            choices = colnames(nitrate_model_2020)[c(3,4,5,6,7)]),
+                uiOutput('select_dis_nitrate'),
                 uiOutput('nitrate_slide'),
                 p(HTML('<b>Model Statistics</b>')),
                 tableOutput('nitrate_stats')
@@ -521,7 +580,6 @@ if (interactive()) {
               bs4Card(
                 #Card info
                 title = "Nitrate Diel Model",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 8,
                 plotOutput('nitrate_model'),
@@ -531,12 +589,13 @@ if (interactive()) {
             ),# fluidRow close
             
             # Nitrate Model predictions
+            h2('Nitrate Model Prediction Statistics'),
+            p('Set Model River Distance to Downstream Observed Location to test model output.'),
             fluidRow(
               # Graphic of Model Error
               bs4Card(
                 # Card info
                 title = "Nitrate Model Observed by Predicted",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 6,
                 plotOutput('nitratemodelpred'),
@@ -547,24 +606,27 @@ if (interactive()) {
               bs4Card(
                 # Card info
                 title = "Nitrate Model Prediction Statistics",
-                collapsible = FALSE,
                 closable = FALSE,
                 width = 6,
                 p(HTML("<b>Sum of Error Squared</b>")),
                 textOutput('nitrate_model_error'),
+                p(HTML("<br>")),
                 p(HTML("<b>R Squared</b>")),
                 textOutput('nitrate_model_r_square')
               )
             ),
             
             # Nitrate Table
+            h2('Nitrate Model Table'),
+            p('Select model distance from upstream boundry in the Model River Distance selection interface to see other modeled outputs in this table.'),
             fluidRow(
               # DO Model Table Output
               bs4Card(
                 title = "Nitrate Model Table",
-                collapsible = TRUE,
                 closable = FALSE,
-                width = 12,
+                width = 8,
+                downloadButton('download_nitratetable', 'Download Table'),
+                p(HTML("<br>")),
                 dataTableOutput('nitrate_model_table')
               )
             )
@@ -648,12 +710,32 @@ if (interactive()) {
       ## Model Parameters Tab code ##
       ###############################
       
-      # Model Grid
-      # Segment Distance
-      output$dx <- renderPrint({
-        dx <- input$riverlen/input$Nb
-        print(round(dx, 1))
+      # template select input
+      templateInput <- reactive({
+        Solute <- read_csv("templates/Solute.csv")
+        Dissolved_Oxygen <- read_csv("templates/Dissolved_Oxygen.csv")
+        Nitrate <- read_csv("templates/Nitrate.csv")
+        
+        switch(input$template,
+               "Solute" = Solute,
+               "Dissolved_Oxygen" = Dissolved_Oxygen,
+               "Nitrate" = Nitrate)
       })
+      
+      # show the template table
+      output$template_head <- renderTable({
+        templateInput()
+      })
+      
+      # download the template
+      output$downloadTemplate <- downloadHandler(
+        filename = function() {
+          paste(input$template, ".csv", sep = "")
+        },
+        content = function(file) {
+          write.csv(templateInput(), file, row.names = FALSE)
+        }
+      )
       
       # upload solute data
       solute_us_ds <- reactive({
@@ -691,37 +773,64 @@ if (interactive()) {
         return(nitrate_us_ds)
       })
       
-      # template select input
-      templateInput <- reactive({
-        Solute <- read_csv("templates/Solute.csv")
-        Dissolved_Oxygen <- read_csv("templates/Dissolved_Oxygen.csv")
-        Nitrate <- read_csv("templates/Nitrate.csv")
+      ## import model data
+      
+      # upload solute model data
+      solute_model_import <- reactive({
+        req(input$solute_model_upload)
         
-        switch(input$template,
-               "Solute" = Solute,
-               "Dissolved_Oxygen" = Dissolved_Oxygen,
-               "Nitrate" = Nitrate)
+        solute_model <- input$solute_model_upload
+        
+        solute_model_import <- read_csv(solute_model$datapath)
+        return(solute_model_import)
       })
       
-      # show the template table
-      output$template_head <- renderTable({
-        templateInput()
+      # upload DO data
+      do_model_import <- reactive({
+        req(input$do_model_upload)
+        
+        do_model <- input$do_model_upload
+        
+        do_model_import <- read_csv(do_model$datapath)
+        return(do_model_import)
       })
       
-      # downlod the template
-      output$downloadTemplate <- downloadHandler(
-        filename = function() {
-          paste(input$template, ".csv", sep = "")
-        },
-        content = function(file) {
-          write.csv(templateInput(), file, row.names = FALSE)
-        }
-      )
+      # upload nitrate data
+      nitrate_model_import <- reactive({
+        req(input$nitrate_model_upload)
+        
+        nitrate_model <- input$nitrate_model_upload
+        
+        nitrate_model_import <- read_csv(nitrate_model$datapath)
+        return(nitrate_model_import)
+      })
+      
+      solute_model <- function () {
+        return(solute_model_import())
+      }
+      
+      do_model <- function () {
+        return(do_model_import())
+      }
+      
+      nitrate_model <- function () {
+        return(nitrate_model_import())
+      }
+      
+      # Model Grid
+      # Segment Distance
+      output$dx <- renderPrint({
+        dx <- input$riverlen/input$Nb
+        print(round(dx, 1))
+      })
       
       ## Conservative Tracer Tab code ##
       ##################################
       
-      
+      output$select_dis_tracer <- renderUI(
+        selectInput('distance', 'Model River Distance (in m)', 
+                  choices = colnames(solute_model())[-1])
+      )
       
       # Plot of Model of Conservative Tracer by Time by Distance
       output$modelplot <- renderPlot({
@@ -737,8 +846,8 @@ if (interactive()) {
           geom_point(data = solute_us_ds(), aes(x = time_min, 
                                                 y = ds_sensor_obs), 
                      color = 'blue') +
-          geom_line(data = trace_model_2020, aes(x = time_min, 
-                                                 y = trace_model_2020[[input$distance]]), 
+          geom_line(data = solute_model(), aes(x = time_min, 
+                                                 y = solute_model()[[input$distance]]), 
                     color = 'red')+
           labs(x="Minutes", y="Conservative Trace (in ppb)", title= "Conservative Tracer Model", 
                subtitle = "Up stream observed values (in green) and Down stream observed values (in blue) with modeled values (in red)")+
@@ -753,8 +862,12 @@ if (interactive()) {
         }) 
       
       # Conservative Tracer Summary Statistics
-      output$con_trace_sum <- renderPrint({
-        summary(trace_model_2020[input$distance])
+      output$con_trace_sum <- renderTable({
+        solute_model() %>%
+          summarise(Max = max(solute_model()[input$distance]),
+                    Min = min(solute_model()[input$distance]),
+                    Mean = mean(unlist(solute_model()[input$distance])),
+                    Median = median(unlist(solute_model()[input$distance])))
       })
       
       # Plot of Model prediction vs Observed Downstream value
@@ -764,8 +877,8 @@ if (interactive()) {
       
       modelpred_fn <- function() {
         solute_us_ds() %>% 
-          left_join(trace_model_2020) %>%  
-          ggplot(aes(x=ds_sensor_obs, y = trace_model_2020[[input$distance]])) +
+          left_join(solute_model()) %>%  
+          ggplot(aes(x=ds_sensor_obs, y = solute_model()[[input$distance]])) +
           geom_point() +
           geom_smooth(method = "lm") +
           labs(x="Observed", y="Predicted", 
@@ -780,33 +893,47 @@ if (interactive()) {
                  height = 8.5, units = 'in', dpi=320)
         }) 
       
+      
+      
       # Model predicted vs observed summary stats
+      
+      
       output$model_error <- renderPrint({
-        obs <- solute_us_ds() %>% 
-          select(ds_sensor_obs)
-        pred <- trace_model_2020 %>% 
-          select(input$distance)
+        obs <- unlist(solute_us_ds() %>% 
+          select(ds_sensor_obs))
+        pred <- unlist(solute_table_fn() %>% 
+          select(input$distance))
         SSE <- sum((obs-pred)^2)
         print(round(SSE, 2))
       })
       
       output$model_r_square <- renderPrint({
-        obs <- solute_us_ds() %>% 
-          select(ds_sensor_obs)
-        pred <- trace_model_2020 %>% 
-          select(input$distance)
-        df <- data.frame(obs = unlist(obs), pred = unlist(pred))
-        fit <- lm(obs~pred, data = df)
+        df <- solute_table_fn() %>% 
+          mutate(pred = solute_table_fn()[[input$distance]]) %>% 
+          select(ds_sensor_obs, pred)
+        fit <- lm(ds_sensor_obs ~ pred, data = df)
         print(summary(fit)$r.squared)
       })
       
       # Conservative Tracer Model Table
       output$tracer_model_table <- renderDataTable({
+        print(solute_table_fn())
+      })
+      
+      solute_table_fn <- function() {
         tracer_model_table <- solute_us_ds() %>% 
-          left_join(trace_model_2020) %>% 
+          left_join(solute_model()) %>% 
           select(datetime, time_min, us_sensor_obs, ds_sensor_obs, input$distance)
         return(tracer_model_table)
-      })
+      }
+      
+      # download the do table
+      output$download_solutetable <- downloadHandler(
+        filename = 'solute_table_output.csv',
+        content = function(file) {
+          write.csv(solute_table_fn(), file, row.names = FALSE)
+        }
+      )
       
       ## Dissolved Oxygen Tab code ##
       ###############################
@@ -827,6 +954,10 @@ if (interactive()) {
         (do_us_ds()$time_min[2]-do_us_ds()$time_min[1])*60
       })
       
+      output$select_dis_do <- renderUI(
+        selectInput('do_distance', 'Model River Distance (in m)', 
+                    choices = colnames(do_model())[c(-1, -2)])
+      )
       
       
       # DO Model Parameters
@@ -892,6 +1023,31 @@ if (interactive()) {
         
       })
       
+      
+      # plot Zoom Par
+      output$par_zoom <-  renderPlot({
+        print(par_zoom_fn())
+      })
+      
+      par_zoom_fn <- function() {
+        do_us_ds() %>% 
+          filter(as.POSIXct(datetime) >= input$par_time_sum[1] 
+                 & as.POSIXct(datetime) <= input$par_time_sum[2]) %>%
+          ggplot(aes(x=datetime, y=par))+
+          geom_line(color="blue")+
+          labs(x="Datetime", y = "PAR",
+               title = "PAR by Date and Time",
+               subtitle = "Detail View of PAR")+
+          theme_bw()
+      }
+      
+      output$download_par_zoom <- downloadHandler(
+        filename = "par_detail.png",
+        content = function(file) {
+          ggsave(file, plot = par_fn(), width = 11, 
+                 height = 8.5, units = 'in', dpi=320)
+        })
+      
       # Gross Primary Production
       # create GPP slider with renderUI
       output$gpp_slide <- renderUI(
@@ -922,6 +1078,31 @@ if (interactive()) {
       
       output$download_gpp <- downloadHandler(
         filename = "gpp.png",
+        content = function(file) {
+          ggsave(file, plot = gpp_fn(), width = 11, 
+                 height = 8.5, units = 'in', dpi=320)
+        })
+      
+      # plot GPP Zoom
+      output$gpp_zoom <- renderPlot({
+        print(gpp_zoom_fn())
+      })
+      
+      gpp_zoom_fn <- function() {
+        do_us_ds() %>% 
+          mutate(gpp = (((par*input$kpp)/input$depth)/1000)) %>%
+          filter(as.POSIXct(datetime) >= input$gpp_time_sum[1] 
+                 & as.POSIXct(datetime) <= input$gpp_time_sum[2]) %>%
+          ggplot(aes(x=datetime, y=gpp))+
+          geom_line(color="blue")+
+          labs(x="Datetime", y="Gross Primary Production", 
+               title = "Gross Primary Production by Date and Time",
+               subtitle = "Detail View of GPP")+
+          theme_bw()
+      }
+      
+      output$download_gpp_zoom <- downloadHandler(
+        filename = "gpp_detail.png",
         content = function(file) {
           ggsave(file, plot = gpp_fn(), width = 11, 
                  height = 8.5, units = 'in', dpi=320)
@@ -1001,8 +1182,8 @@ if (interactive()) {
           ggplot()+
           geom_line(aes(x=datetime, y=us_station_obs), color="green")+
           geom_line(aes(x=datetime, y=ds_station_obs), color="blue")+
-          geom_line(data = do_model_2020, aes(x= datetime, 
-                                              y = do_model_2020[[input$do_distance]]),
+          geom_line(data = do_model(), aes(x= datetime, 
+                                              y = do_model()[[input$do_distance]]),
                     color = "red")+
           geom_vline(aes(xintercept=input$do_time_sum[1]), color="red")+
           geom_vline(aes(xintercept=input$do_time_sum[2]), color="red")+
@@ -1026,9 +1207,9 @@ if (interactive()) {
         x = input$do_distance
         
         # select the range of data to look at
-        y <- do_model_2020 %>% 
-          filter(as.POSIXct(do_model_2020$datetime) >= input$do_time_sum[1] 
-                 & as.POSIXct(do_model_2020$datetime) <= input$do_time_sum[2]) %>% 
+        y <- do_model() %>% 
+          filter(as.POSIXct(do_model()$datetime) >= input$do_time_sum[1] 
+                 & as.POSIXct(do_model()$datetime) <= input$do_time_sum[2]) %>% 
           select(x)
         
         # unlist the stored y data and find max, min, mean
@@ -1049,8 +1230,8 @@ if (interactive()) {
       
       domodelpred_fn <- function() {
         do_us_ds() %>% 
-          left_join(do_model_2020) %>%  
-          ggplot(aes(x=ds_station_obs, y = do_model_2020[[input$do_distance]])) +
+          left_join(do_model()) %>%  
+          ggplot(aes(x=ds_station_obs, y = do_model()[[input$do_distance]])) +
           geom_point() +
           geom_smooth(method = "lm") +
           labs(x="Observed", y="Predicted", 
@@ -1070,7 +1251,7 @@ if (interactive()) {
       output$do_model_error <- renderPrint({
         obs <- do_us_ds() %>% 
           select(ds_station_obs)
-        pred <- do_model_2020 %>% 
+        pred <- do_model() %>% 
           select(input$do_distance)
         SSE <- sum((obs-pred)^2)
         print(round(SSE, 2))
@@ -1080,7 +1261,7 @@ if (interactive()) {
       output$do_model_r_square <- renderPrint({
         obs <- do_us_ds() %>% 
           select(ds_station_obs)
-        pred <- do_model_2020 %>% 
+        pred <- do_model() %>% 
           select(input$do_distance)
         df <- data.frame(obs = unlist(obs), pred = unlist(pred))
         fit <- lm(obs~pred, data = df)
@@ -1088,11 +1269,25 @@ if (interactive()) {
       })
       
       # DO Model Table
-      output$do_model_table <- renderDataTable({
+      do_table_fn <- function() {
         do_model_table <- do_us_ds() %>% 
-          left_join(do_model_2020)
+          left_join(do_model()) %>% 
+          mutate(gpp = (((par*input$kpp)/input$depth)/1000)) %>%
+          select(datetime, time_min, us_station_obs, ds_station_obs, par, gpp, avgtemp,input$do_distance)
         return(do_model_table)
+      }
+      
+      output$do_model_table <- renderDataTable({
+        print(do_table_fn())
       })
+      
+      # download the do table
+      output$download_dotable <- downloadHandler(
+        filename = 'DO_table_output.csv',
+        content = function(file) {
+          write.csv(do_table_fn(), file, row.names = FALSE)
+        }
+      )
       
       ## Nitrate Tab code ##
       ######################
@@ -1123,6 +1318,13 @@ if (interactive()) {
                     step = 1)
       ) 
       
+      output$select_dis_do <- renderUI(
+        selectInput('nitrate_distance', 'Model River Distance (in m)', 
+                    choices = colnames(nitrate_model())[c(-1,-2)])
+      )
+      
+      
+      
       # Nitrate model plot output
       output$nitrate_model <- renderPlot({
         print(nitrate_model_fn())
@@ -1133,8 +1335,8 @@ if (interactive()) {
           ggplot()+
           geom_line(aes(x=datetime, y=us_station_obs), color="green")+
           geom_line(aes(x=datetime, y=ds_station_obs), color="blue")+
-          geom_line(data = nitrate_model_2020, aes(x= datetime, 
-                                                   y = nitrate_model_2020[[input$nitrate_distance]]),
+          geom_line(data = nitrate_model(), aes(x= datetime, 
+                                                   y = nitrate_model()[[input$nitrate_distance]]),
                     color = "red")+
           geom_vline(aes(xintercept=input$nitrate_time_sum[1]), color="red")+
           geom_vline(aes(xintercept=input$nitrate_time_sum[2]), color="red")+
@@ -1158,9 +1360,9 @@ if (interactive()) {
         x = input$nitrate_distance
         
         # select the range of data to look at
-        y <- nitrate_model_2020 %>% 
-          filter(as.POSIXct(nitrate_model_2020$datetime) >= input$nitrate_time_sum[1] 
-                 & as.POSIXct(nitrate_model_2020$datetime) <= input$nitrate_time_sum[2]) %>% 
+        y <- nitrate_model() %>% 
+          filter(as.POSIXct(nitrate_model()$datetime) >= input$nitrate_time_sum[1] 
+                 & as.POSIXct(nitrate_model()$datetime) <= input$nitrate_time_sum[2]) %>% 
           select(x)
         
         # unlist the stored y data and find max, min, mean
@@ -1181,8 +1383,8 @@ if (interactive()) {
       
       nitratemodelpred_fn <- function() {
         nitrate_us_ds() %>% 
-          left_join(nitrate_model_2020) %>%  
-          ggplot(aes(x=ds_station_obs, y = nitrate_model_2020[[input$nitrate_distance]])) +
+          left_join(nitrate_model()) %>%  
+          ggplot(aes(x=ds_station_obs, y = nitrate_model()[[input$nitrate_distance]])) +
           geom_point() +
           geom_smooth(method = "lm") +
           labs(x="Observed", y="Predicted", 
@@ -1202,7 +1404,7 @@ if (interactive()) {
       output$nitrate_model_error <- renderPrint({
         obs <- nitrate_us_ds() %>% 
           select(ds_station_obs)
-        pred <- nitrate_model_2020 %>% 
+        pred <- nitrate_model() %>% 
           select(input$nitrate_distance)
         SSE <- sum((obs-pred)^2)
         print(round(SSE, 2))
@@ -1212,7 +1414,7 @@ if (interactive()) {
       output$nitrate_model_r_square <- renderPrint({
         obs <- nitrate_us_ds() %>% 
           select(ds_station_obs)
-        pred <- nitrate_model_2020 %>% 
+        pred <- nitrate_model() %>% 
           select(input$nitrate_distance)
         df <- data.frame(obs = unlist(obs), pred = unlist(pred))
         fit <- lm(obs~pred, data = df)
@@ -1220,11 +1422,24 @@ if (interactive()) {
       })
       
       # Nitrate Model Table
-      output$nitrate_model_table <- renderDataTable({
+      nitrate_table_fn <- function() {
         nitrate_model_table <- nitrate_us_ds() %>% 
-          left_join(nitrate_model_2020)
+          left_join(nitrate_model()) %>% 
+          select(datetime, time_min, us_station_obs, ds_station_obs, input$nitrate_distance)
         return(nitrate_model_table)
+      }
+      
+      output$nitrate_model_table <- renderDataTable({
+        print(nitrate_table_fn())
       })
+      
+      # download the nitrate table
+      output$download_nitratetable <- downloadHandler(
+        filename = 'nitrate_table_output.csv',
+        content = function(file) {
+          write.csv(nitrate_table_fn(), file, row.names = FALSE)
+        }
+      )
       
     } # server functions close
   ) # shinyApp close
