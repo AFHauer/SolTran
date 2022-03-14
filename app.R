@@ -51,7 +51,7 @@ if (interactive()) {
                 width = 3,
                 closable = FALSE,
                 selectInput('template', 'Choose a template:',
-                            choices = c('Solute', 'Dissolved_Oxygen', 'Nitrate')),
+                            choices = c('Conservative Tracer', 'Dissolved Oxygen', 'Nitrate', 'Conservative Tracer Model', 'DO Model', 'Nitrate Model')),
                 downloadButton('downloadTemplate',
                                'Download Template:', 
                                icon=shiny::icon('download'))
@@ -287,8 +287,8 @@ if (interactive()) {
             ), # fluidRow close
             
             
-              h2('Conservative Tracer Model Table'),
-              p('Select model distance from upstream boundry in the Model River Distance selection interface to see other modeled outputs in this table.'),
+            h2('Conservative Tracer Model Table'),
+            p('Select model distance from upstream boundry in the Model River Distance selection interface to see other modeled outputs in this table.'),
             fluidRow(
               # # Conservative Tracer Table
               bs4Card(
@@ -322,7 +322,7 @@ if (interactive()) {
                 
               ),
               bs4Card(
-                title = "DO Model Parameters",
+                title = "DO GPP Model Parameters",
                 width = 4,
                 closable = FALSE,
                 p('Primary Production Rate Constant'),
@@ -344,6 +344,18 @@ if (interactive()) {
                 actionButton('kpp_update', 'Refresh Max/Min')
               ),
               
+              # ER calculation
+              bs4Card(
+                title = "DO ER Model Parameters",
+                width = 4,
+                closable = FALSE,
+                p('Respiration Rate Constant'),
+                numericInput('kER', 'kER:', value = 0.002),
+                p('Respiration Rate Exponent'),
+                numericInput('nER', 'nER:', value = .3),
+                h3('ER'),
+                textOutput('er_out')
+              )
               
             ), #fluidRow close
             
@@ -399,46 +411,46 @@ if (interactive()) {
             p('GPP is a function of the Primary Production Rate Constant times Par divided by depth.'),
             p('Be sure to calculate each measure to determine GPP'),
             fluidRow(
-                     # GPP Summary
-                     bs4Card(
-                       # Card info
-                       title = "GPP Input",
-                       closable = FALSE,
-                       width = 6,
-                       p('Adjust the upper and lower bounds of the slider to measure statistics for that section in time.'),
-                       uiOutput('gpp_slide')
-                     ),
-                     
-                     bs4Card(
-                       # Card info
-                       title = "GPP Statistics",
-                       closable = FALSE,
-                       width = 6,
-                       tableOutput('gpp_stats')
-                     ),
-                     
-                     # Gross Primary Production
-                     bs4Card(
-                       # Card info
-                       title = "Gross Primary Production",
-                       closable = FALSE,
-                       width = 6,
-                       plotOutput('gpp'),
-                       p('GPP Figure displays the entirety of the GPP data. Adjusting the upper and lower bound of the GPP Input Slider will adjust the red indicator lines. These red verticle lines display the selection of data for statistical read out and the Detail View.'),
-                       downloadButton('download_gpp', 'Download Plot')
-                     ),
-                     
-                     # Gross Primary Production
-                     bs4Card(
-                       # Card info
-                       title = "Gross Primary Production Detail View",
-                       closable = FALSE,
-                       width = 6,
-                       plotOutput('gpp_zoom'),
-                       p('GPP Detail View. Adjust the upper and lower bounds on the GPP Input Slider to adjust the view selection.'),
-                       downloadButton('download_gpp_zoom', 'Download Plot')
-                     )
-                     
+              # GPP Summary
+              bs4Card(
+                # Card info
+                title = "GPP Input",
+                closable = FALSE,
+                width = 6,
+                p('Adjust the upper and lower bounds of the slider to measure statistics for that section in time.'),
+                uiOutput('gpp_slide')
+              ),
+              
+              bs4Card(
+                # Card info
+                title = "GPP Statistics",
+                closable = FALSE,
+                width = 6,
+                tableOutput('gpp_stats')
+              ),
+              
+              # Gross Primary Production
+              bs4Card(
+                # Card info
+                title = "Gross Primary Production",
+                closable = FALSE,
+                width = 6,
+                plotOutput('gpp'),
+                p('GPP Figure displays the entirety of the GPP data. Adjusting the upper and lower bound of the GPP Input Slider will adjust the red indicator lines. These red verticle lines display the selection of data for statistical read out and the Detail View.'),
+                downloadButton('download_gpp', 'Download Plot')
+              ),
+              
+              # Gross Primary Production
+              bs4Card(
+                # Card info
+                title = "Gross Primary Production Detail View",
+                closable = FALSE,
+                width = 6,
+                plotOutput('gpp_zoom'),
+                p('GPP Detail View. Adjust the upper and lower bounds on the GPP Input Slider to adjust the view selection.'),
+                downloadButton('download_gpp_zoom', 'Download Plot')
+              )
+              
             ), # fluidRow close
             
             ## Temp Output ##
@@ -467,7 +479,6 @@ if (interactive()) {
                        plotOutput('temp'),
                        downloadButton('download_temp', 'Download Plot')
                      ),
-                     
               ) # column close
             ), # fluidRow
             
@@ -481,9 +492,17 @@ if (interactive()) {
                 # Card info
                 title = "Select Model Distance from Upstream Value",
                 closable = FALSE,
-                width = 4,
+                width = 6,
                 uiOutput('select_dis_do'),
-                uiOutput('do_slide'),
+                uiOutput('do_slide')
+              ),
+              
+              # do statistics
+              bs4Card(
+                # Card info
+                title = "Dissolved Oxygen Statistics",
+                closable = FALSE,
+                width = 6,
                 p(HTML('<b>Model Statistics</b>')),
                 tableOutput('do_stats')
               ),
@@ -493,11 +512,22 @@ if (interactive()) {
                 #Card info
                 title = "Dissolved Oxygen Diel Model",
                 closable = FALSE,
-                width = 8,
+                width = 6,
                 plotOutput('do_model'),
+                p('DO Figure displays the entirety of the DO data. Adjusting the upper and lower bound of the DO Input Slider will adjust the red indicator lines, selecting model locations will change model distance from the upstream boundary. These red verticle lines display the selection of data for statistical read out and the Detail View.'),
                 downloadButton('download_do_model', 'Download Plot')
-              )
+              ),
               
+              # do model detail view
+              bs4Card(
+                #Card info
+                title = "Dissolved Oxygen Diel Model Detail View",
+                closable = FALSE,
+                width = 6,
+                plotOutput('do_model_zoom'),
+                p('DO Model Detail View. Adjust the upper and lower bounds on the DO Input Slider to adjust the view selection.'),
+                downloadButton('download_do_model_zoom', 'Download Plot')
+              )
             ), # fluidRow close
             
             # DO Model predictions
@@ -567,23 +597,41 @@ if (interactive()) {
             fluidRow(
               # Nitrate Model input
               bs4Card(
-                title = 'Select Model Distance from Upstream Value',
+                title = 'Select Nitrate Model Distance from Upstream Value',
                 closable = FALSE,
-                width = 4,
+                width = 6,
                 uiOutput('select_dis_nitrate'),
-                uiOutput('nitrate_slide'),
+                uiOutput('nitrate_slide')
+              ),
+              
+              bs4Card(
+                title = 'Nitrate Statistics',
+                closable = FALSE,
+                width = 6,
                 p(HTML('<b>Model Statistics</b>')),
                 tableOutput('nitrate_stats')
               ),
               
-              # do model output
+              # nitrate model output
               bs4Card(
                 #Card info
                 title = "Nitrate Diel Model",
                 closable = FALSE,
-                width = 8,
+                width = 6,
                 plotOutput('nitrate_model'),
+                p('Nitrate Figure displays the entirety of the Nitrate data. Adjusting the upper and lower bound of the Nitrate Input Slider will adjust the red indicator lines, selecting model locations will change model distance from the upstream boundary. These red verticle lines display the selection of data for statistical read out and the Detail View.'),
                 downloadButton('download_nitrate_model', 'Download Plot')
+              ),
+              
+              # nitrate model detail output
+              bs4Card(
+                #Card info
+                title = "Nitrate Diel Model Detail View",
+                closable = FALSE,
+                width = 6,
+                plotOutput('nitrate_model_zoom'),
+                p('Mitrate Model Detail View. Adjust the upper and lower bounds on the DO Input Slider to adjust the view selection.'),
+                downloadButton('download_nitrate_model_zoom', 'Download Plot')
               )
               
             ),# fluidRow close
@@ -715,11 +763,17 @@ if (interactive()) {
         Solute <- read_csv("templates/Solute.csv")
         Dissolved_Oxygen <- read_csv("templates/Dissolved_Oxygen.csv")
         Nitrate <- read_csv("templates/Nitrate.csv")
+        conserv_trace_model_out <- read_csv("templates/conserv_trace_model_out.csv")
+        do_model_out <- read_csv("templates/do_model_out.csv")
+        nitrate_model_out <- read_csv("templates/nitrate_model_out.csv")
         
         switch(input$template,
-               "Solute" = Solute,
-               "Dissolved_Oxygen" = Dissolved_Oxygen,
-               "Nitrate" = Nitrate)
+               "Conservative Tracer" = Solute,
+               "Dissolved Oxygen" = Dissolved_Oxygen,
+               "Nitrate" = Nitrate,
+               "Conservative Tracer Model" = conserv_trace_model_out,
+               "DO Model" = do_model_out,
+               "Nitrate Model" = nitrate_model_out)
       })
       
       # show the template table
@@ -740,8 +794,6 @@ if (interactive()) {
       # upload solute data
       solute_us_ds <- reactive({
         req(input$solute_upload)
-        validate(need(input$solute_upload == "Solute.csv", 
-                      "Please upload the completed template, Solute.csv."))
         
         solute_data <- input$solute_upload
         
@@ -752,8 +804,6 @@ if (interactive()) {
       # upload DO data
       do_us_ds <- reactive({
         req(input$do_upload)
-        validate(need(input$do_upload == "Dissolved_Oxygen.csv", 
-                      "Please upload the completed template, Dissolved_Oxygen.csv."))
         
         do_data <- input$do_upload
         
@@ -764,8 +814,6 @@ if (interactive()) {
       # upload nitrate data
       nitrate_us_ds <- reactive({
         req(input$nitrate_upload)
-        validate(need(input$nitrate_upload == "Nitrate.csv", 
-                      "Please upload the completed template, Nitrate.csv."))
         
         nitrate_data <- input$nitrate_upload
         
@@ -829,7 +877,7 @@ if (interactive()) {
       
       output$select_dis_tracer <- renderUI(
         selectInput('distance', 'Model River Distance (in m)', 
-                  choices = colnames(solute_model())[-1])
+                    choices = colnames(solute_model())[c(-1, -2)])
       )
       
       # Plot of Model of Conservative Tracer by Time by Distance
@@ -847,7 +895,7 @@ if (interactive()) {
                                                 y = ds_sensor_obs), 
                      color = 'blue') +
           geom_line(data = solute_model(), aes(x = time_min, 
-                                                 y = solute_model()[[input$distance]]), 
+                                               y = solute_model()[[input$distance]]), 
                     color = 'red')+
           labs(x="Minutes", y="Conservative Trace (in ppb)", title= "Conservative Tracer Model", 
                subtitle = "Up stream observed values (in green) and Down stream observed values (in blue) with modeled values (in red)")+
@@ -900,9 +948,9 @@ if (interactive()) {
       
       output$model_error <- renderPrint({
         obs <- unlist(solute_us_ds() %>% 
-          select(ds_sensor_obs))
+                        select(ds_sensor_obs))
         pred <- unlist(solute_table_fn() %>% 
-          select(input$distance))
+                         select(input$distance))
         SSE <- sum((obs-pred)^2)
         print(round(SSE, 2))
       })
@@ -976,6 +1024,8 @@ if (interactive()) {
                     max = kpp_max(),
                     value = kpp_min() +(.5*(kpp_max()-kpp_min())))
       )
+      
+      
       
       # Par
       
@@ -1183,7 +1233,7 @@ if (interactive()) {
           geom_line(aes(x=datetime, y=us_station_obs), color="green")+
           geom_line(aes(x=datetime, y=ds_station_obs), color="blue")+
           geom_line(data = do_model(), aes(x= datetime, 
-                                              y = do_model()[[input$do_distance]]),
+                                           y = do_model()[[input$do_distance]]),
                     color = "red")+
           geom_vline(aes(xintercept=input$do_time_sum[1]), color="red")+
           geom_vline(aes(xintercept=input$do_time_sum[2]), color="red")+
@@ -1200,6 +1250,34 @@ if (interactive()) {
                  height = 8.5, units = 'in', dpi=320)
         }
       )
+      
+      # plot DO Zoom
+      output$do_model_zoom <- renderPlot({
+        print(do_model_zoom_fn())
+      })
+      
+      do_model_zoom_fn <- function() {
+        do_us_ds() %>%
+          mutate(model = do_model()[[input$do_distance]]) %>% 
+          filter(as.POSIXct(do_us_ds()$datetime) >= input$do_time_sum[1] 
+                 & as.POSIXct(do_us_ds()$datetime) <= input$do_time_sum[2]) %>%
+          ggplot()+
+          geom_line(aes(x = datetime, y = us_station_obs), color="green")+
+          geom_line(aes(x = datetime, y = ds_station_obs), color="blue")+
+          geom_line(aes(x = datetime,y = model),
+                    color = "red")+
+          labs(x="Datetime", y="Dissolved Oxygen", 
+               title = "Dissolved Oxygen Model Detail View", 
+               subtitle = "Up river observations in Green, Down river observations in Blue, Model in Red")+
+          theme_classic()
+      }
+      
+      output$download_do_model_zoom <- downloadHandler(
+        filename = "do_model_detail.png",
+        content = function(file) {
+          ggsave(file, plot = do_model_zoom_fn(), width = 11, 
+                 height = 8.5, units = 'in', dpi=320)
+        })
       
       # DO Model Stats for DO Summary input
       output$do_stats <- renderTable(digits = 3,{
@@ -1318,7 +1396,7 @@ if (interactive()) {
                     step = 1)
       ) 
       
-      output$select_dis_do <- renderUI(
+      output$select_dis_nitrate <- renderUI(
         selectInput('nitrate_distance', 'Model River Distance (in m)', 
                     choices = colnames(nitrate_model())[c(-1,-2)])
       )
@@ -1336,7 +1414,7 @@ if (interactive()) {
           geom_line(aes(x=datetime, y=us_station_obs), color="green")+
           geom_line(aes(x=datetime, y=ds_station_obs), color="blue")+
           geom_line(data = nitrate_model(), aes(x= datetime, 
-                                                   y = nitrate_model()[[input$nitrate_distance]]),
+                                                y = nitrate_model()[[input$nitrate_distance]]),
                     color = "red")+
           geom_vline(aes(xintercept=input$nitrate_time_sum[1]), color="red")+
           geom_vline(aes(xintercept=input$nitrate_time_sum[2]), color="red")+
@@ -1353,6 +1431,34 @@ if (interactive()) {
                  height = 8.5, units = 'in', dpi=320)
         }
       )
+      
+      # plot Nitrate Zoom
+      output$nitrate_model_zoom <- renderPlot({
+        print(nitrate_model_zoom_fn())
+      })
+      
+      nitrate_model_zoom_fn <- function() {
+        nitrate_us_ds() %>%
+          mutate(model = nitrate_model()[[input$nitrate_distance]]) %>% 
+          filter(as.POSIXct(nitrate_us_ds()$datetime) >= input$nitrate_time_sum[1] 
+                 & as.POSIXct(nitrate_us_ds()$datetime) <= input$nitrate_time_sum[2]) %>%
+          ggplot()+
+          geom_line(aes(x = datetime, y = us_station_obs), color="green")+
+          geom_line(aes(x = datetime, y = ds_station_obs), color="blue")+
+          geom_line(aes(x = datetime,y = model),
+                    color = "red")+
+          labs(x="Datetime", y="Nitrate", 
+               title = "Nitrate Model Detail View", 
+               subtitle = "Up river observations in Green, Down river observations in Blue, Model in Red")+
+          theme_classic()
+      }
+      
+      output$download_nitrate_model_zoom <- downloadHandler(
+        filename = "nitrate_model_detail.png",
+        content = function(file) {
+          ggsave(file, plot = nitrate_model_zoom_fn(), width = 11, 
+                 height = 8.5, units = 'in', dpi=320)
+        })
       
       # Model Stats for Nitrate Summary input
       output$nitrate_stats <- renderTable(digits = 3,{
