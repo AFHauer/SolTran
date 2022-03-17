@@ -10,6 +10,7 @@ if (interactive()) {
   library(shinyTime)
   library(tidyverse)
   library(lubridate)
+  library(DT)
   library(readr)
   
   shinyApp(
@@ -74,7 +75,7 @@ if (interactive()) {
               column(width = 4,
                      
                      bs4Card(
-                       title = "Solute Upload",
+                       title = "Conservative Tracer Upload",
                        width = 12,
                        closable = F,
                        p('Upload the "Solute.csv" file after completing and saving your data to the template.'),
@@ -121,9 +122,10 @@ if (interactive()) {
               column(width = 4,
                      
                      bs4Card(
-                       title = "Solute Model Upload",
+                       title = "Conservative Tracer Model Upload",
                        width = 12,
                        closable = FALSE,
+                       p('Upload the "conserv_trace_model_out.csv" file after completing and saving your data to the template.'),
                        fileInput('solute_model_upload', 
                                  'Browse for CSV Solute Model Data', 
                                  accept = ".csv")
@@ -137,6 +139,7 @@ if (interactive()) {
                        title = "Dissolved Oxygen Model Upload",
                        width = 12,
                        closable = FALSE,
+                       p('Upload the "do_model_out.csv" file after completing and saving your data to the template.'),
                        fileInput('do_model_upload', 
                                  'Browse for CSV DO Model Data', 
                                  accept = ".csv")
@@ -149,6 +152,7 @@ if (interactive()) {
                        title = "Nitrate Model Upload",
                        width = 12,
                        closable = FALSE,
+                       p('Upload the "nitrate_model_out.csv" file after completing and saving your data to the template.'),
                        fileInput('nitrate_model_upload', 
                                  'Browse for CSV Nitrate Model Data', 
                                  accept = ".csv")
@@ -174,7 +178,7 @@ if (interactive()) {
                                     value = 1000),
                        p('Input the number of segments the model should run. Distance in meters for each segment is output below.'), 
                        sliderInput('Nb', 'Grid Number', value = 50, min = 1, max = 150),
-                       "Segment Distance (m)",
+                       p(HTML("<b>Segment Distance (m)</b>")),
                        verbatimTextOutput("dx")
                      ),
               ), # column close
@@ -297,7 +301,7 @@ if (interactive()) {
                 width = 8,
                 downloadButton('download_solutetable', 'Download Table'),
                 p(HTML("<br>")),
-                dataTableOutput('tracer_model_table')
+                DT::dataTableOutput('tracer_model_table')
               )
             ) # fluidRow close
           ), # tabItem close
@@ -568,7 +572,7 @@ if (interactive()) {
                 width = 12,
                 downloadButton('download_dotable', 'Download Table'),
                 p(HTML("<br>")),
-                dataTableOutput('do_model_table')
+                DT::dataTableOutput('do_model_table')
               )
             ) # Table fluidRow Close
             
@@ -675,7 +679,7 @@ if (interactive()) {
                 width = 8,
                 downloadButton('download_nitratetable', 'Download Table'),
                 p(HTML("<br>")),
-                dataTableOutput('nitrate_model_table')
+                DT::dataTableOutput('nitrate_model_table')
               )
             )
             
@@ -964,7 +968,7 @@ if (interactive()) {
       })
       
       # Conservative Tracer Model Table
-      output$tracer_model_table <- renderDataTable({
+      output$tracer_model_table <- DT::renderDataTable({
         print(solute_table_fn())
       })
       
@@ -1154,7 +1158,7 @@ if (interactive()) {
       output$download_gpp_zoom <- downloadHandler(
         filename = "gpp_detail.png",
         content = function(file) {
-          ggsave(file, plot = gpp_fn(), width = 11, 
+          ggsave(file, plot = gpp_zoom_fn(), width = 11, 
                  height = 8.5, units = 'in', dpi=320)
         })
       
@@ -1355,7 +1359,7 @@ if (interactive()) {
         return(do_model_table)
       }
       
-      output$do_model_table <- renderDataTable({
+      output$do_model_table <- DT::renderDataTable({
         print(do_table_fn())
       })
       
@@ -1535,7 +1539,7 @@ if (interactive()) {
         return(nitrate_model_table)
       }
       
-      output$nitrate_model_table <- renderDataTable({
+      output$nitrate_model_table <- DT::renderDataTable({
         print(nitrate_table_fn())
       })
       
