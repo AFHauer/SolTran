@@ -14,6 +14,11 @@ if (interactive()) {
   library(readr)
   
   shinyApp(
+    
+    ########################
+    ##      UI START      ##
+    ########################
+    
     ui = dashboardPage(
       
       ## header ##
@@ -293,6 +298,7 @@ if (interactive()) {
             
             h2('Conservative Tracer Model Table'),
             p('Select model distance from upstream boundry in the Model River Distance selection interface to see other modeled outputs in this table.'),
+            
             fluidRow(
               # # Conservative Tracer Table
               bs4Card(
@@ -316,6 +322,7 @@ if (interactive()) {
             # Reactive DO Parameters
             fluidRow(
               
+              # Activate DO data
               bs4Card(
                 # Card info
                 title = "Run Uploaded DO Data",
@@ -323,10 +330,11 @@ if (interactive()) {
                 width = 2,
                 p("Run DO Data. Refresh the Dissolved Oxygen Data after data upload."),
                 actionButton('do_slider_refresh', 'Refresh')
-                
               ),
+              
+              # GPP Model Parameters
               bs4Card(
-                title = "DO GPP Model Parameters",
+                title = "Gross Primary Production Model Parameters",
                 width = 4,
                 closable = FALSE,
                 p('Primary Production Rate Constant'),
@@ -334,12 +342,12 @@ if (interactive()) {
                   column(6,
                          
                          numericInput('kpp_min', 
-                                      'kpp min:', 
+                                      'kpp min (mg-O/J):', 
                                       value = 0.0004),
                   ), # close column
                   column(6,
                          numericInput('kpp_max',
-                                      'kpp max:', 
+                                      'kpp max (mg-O/J):', 
                                       value = 0.0006)
                   ) # close column
                 ), # close fluidRow
@@ -348,19 +356,18 @@ if (interactive()) {
                 actionButton('kpp_update', 'Refresh Max/Min')
               ),
               
-              # ER calculation
+              # Average R calculation
               bs4Card(
-                title = "DO ER Model Parameters",
+                title = "Respiration Model Parameters",
                 width = 4,
                 closable = FALSE,
                 p('Respiration Rate Constant'),
-                numericInput('kER', 'kER:', value = 0.002),
-                p('Respiration Rate Exponent'),
-                numericInput('nER', 'nER:', value = .3),
-                h3('ER'),
-                textOutput('er_out')
+                numericInput('kER', 'kER (g-O/m^-2/d^-1):', value = 0.002),
+                #p('Respiration Rate Exponent'), # future model implementation
+                #numericInput('nER', 'nER:', value = .3), # future model implementation
+                p(HTML('<b>Average Respiration, (g-O2/m^2/d)</b>')),
+                textOutput('avg_r_out')
               )
-              
             ), #fluidRow close
             
             ## PAR Output ##
@@ -377,6 +384,7 @@ if (interactive()) {
                 uiOutput("par_slide")
               ),
               
+              # PAR Statistics
               bs4Card(
                 # Card info
                 title = "PAR Statistics",
@@ -385,7 +393,7 @@ if (interactive()) {
                 tableOutput('par_stats')
               ),
               
-              # PAR
+              # PAR Visualization
               bs4Card(
                 # Card info
                 title = "PAR",
@@ -396,7 +404,7 @@ if (interactive()) {
                 downloadButton('download_par', 'Download Plot')
               ),
               
-              # PAR
+              # PAR Detail View
               bs4Card(
                 # Card info
                 title = "PAR Detail View",
@@ -425,12 +433,15 @@ if (interactive()) {
                 uiOutput('gpp_slide')
               ),
               
+              #GPP Statistics
               bs4Card(
                 # Card info
                 title = "GPP Statistics",
                 closable = FALSE,
                 width = 6,
-                tableOutput('gpp_stats')
+                tableOutput('gpp_stats'),
+                p('Average GPP to Average Respiration Ratio'),
+                textOutput('gpp_r_ratio')
               ),
               
               # Gross Primary Production
@@ -454,7 +465,6 @@ if (interactive()) {
                 p('GPP Detail View. Adjust the upper and lower bounds on the GPP Input Slider to adjust the view selection.'),
                 downloadButton('download_gpp_zoom', 'Download Plot')
               )
-              
             ), # fluidRow close
             
             ## Temp Output ##
@@ -489,6 +499,7 @@ if (interactive()) {
             ## DO Output ##
             
             h2('Dissolved Oxygen Diel Model Output'),
+            
             fluidRow(
               
               # do Model distance
@@ -586,14 +597,34 @@ if (interactive()) {
             h1("Nitrate"),
             fluidRow(
               
+              # refresh Nitrate data after data upload
               bs4Card(
-                # Card info
                 # Card info
                 title = "Run Uploaded Nitrate Data", 
                 closable = FALSE,
                 width = 2,
                 p("Run Nitrate Data."),
                 actionButton('nitrate_refresh', 'Refresh')
+              ),
+              
+              # Nitrate Net Primary Production values
+              bs4Card(
+                title = "Net Primary Production",
+                closable = FALSE,
+                width = 4,
+                numericInput('c_n_ratio', 'C:N Ratio (mol C: mol N):', value = 10),
+                p(HTML('<b>NPP:GPP Ratio:</b>')),
+                textOutput('npp_gpp_ratio'),
+                p(HTML('</br>')),
+                p('Ratio of Net Primary Production to Gross Primary Production. Calculation from the Average GPP to Average Respiration Ratio.')
+              ),
+              
+              # Nitrogen Uptake
+              bs4Card(
+                title = "Nitrogen Uptake",
+                closable = FALSE,
+                width = 4
+                
               )
               
             ), # fluidRow close
@@ -738,11 +769,13 @@ if (interactive()) {
       ) # bs4DashFooter close
     ), # UI dashboardPage close
     
-    ##################################################################    
-    #                    server functions                            #
-    ##################################################################
+    ## UI END ##
     
     server = function(input, output, session) {
+      
+      ##################################################################    
+      #                        SERVER FUNCTIONS                        #
+      ##################################################################
       
       observe(print(input$sidebarItemExpanded))
       observe(print(input$sidebar))
@@ -825,7 +858,7 @@ if (interactive()) {
         return(nitrate_us_ds)
       })
       
-      ## import model data
+      ## import model data ##
       
       # upload solute model data
       solute_model_import <- reactive({
@@ -857,19 +890,23 @@ if (interactive()) {
         return(nitrate_model_import)
       })
       
+      ## Function is set up to allow Conservative Tracer to me modeled in dashboard
       solute_model <- function () {
         return(solute_model_import())
       }
       
+      ## Function is set up to allow DO to me modeled in dashboard
       do_model <- function () {
         return(do_model_import())
       }
       
+      ## Function is set up to allow Nitrate to me modeled in dashboard
       nitrate_model <- function () {
         return(nitrate_model_import())
       }
       
-      # Model Grid
+      ## Model Grid
+      
       # Segment Distance
       output$dx <- renderPrint({
         dx <- input$riverlen/input$Nb
@@ -879,6 +916,7 @@ if (interactive()) {
       ## Conservative Tracer Tab code ##
       ##################################
       
+      # select the model distance for output
       output$select_dis_tracer <- renderUI(
         selectInput('distance', 'Model River Distance (in m)', 
                     choices = colnames(solute_model())[c(-1, -2)])
@@ -890,6 +928,7 @@ if (interactive()) {
         
       })
       
+      # Function to plot the conservative tracer
       modelplot_fn <- function() {
         ggplot()+
           geom_point(data = solute_us_ds(), aes(x = time_min, 
@@ -906,6 +945,7 @@ if (interactive()) {
           theme_bw()
       }
       
+      # Download the conservative tracer plot
       output$download_modelplot <- downloadHandler(
         filename = "ConservativeTracer.png",
         content = function(file) {
@@ -927,6 +967,7 @@ if (interactive()) {
         print(modelpred_fn())
       })
       
+      # Function to create the prediction vs observed plot
       modelpred_fn <- function() {
         solute_us_ds() %>% 
           left_join(solute_model()) %>%  
@@ -990,7 +1031,7 @@ if (interactive()) {
       ## Dissolved Oxygen Tab code ##
       ###############################
       
-      # Update Sliders for Data Date Time
+      ## Update Sliders for Data Date Time
       # find min date
       min_do_dt <- eventReactive(input$do_slider_refresh, {
         min(do_us_ds()$datetime)
@@ -1006,22 +1047,19 @@ if (interactive()) {
         (do_us_ds()$time_min[2]-do_us_ds()$time_min[1])*60
       })
       
-      output$select_dis_do <- renderUI(
-        selectInput('do_distance', 'Model River Distance (in m)', 
-                    choices = colnames(do_model())[c(-1, -2)])
-      )
+      ## DO Model Parameters
       
-      
-      # DO Model Parameters
-      
+      # Kpp Min input
       kpp_min <- eventReactive(input$kpp_update, {
         as.numeric(input$kpp_min)
       })
       
+      # Kpp Max input
       kpp_max <- eventReactive(input$kpp_update, {
         as.numeric(input$kpp_max)
       })
       
+      # Create the Kpp slider
       output$kpp_slider <- renderUI(
         sliderInput('kpp', 'kpp Slider',
                     min = kpp_min(), 
@@ -1029,9 +1067,20 @@ if (interactive()) {
                     value = kpp_min() +(.5*(kpp_max()-kpp_min())))
       )
       
+      ## DO Respiration Parameters
       
+      # Function to calculate the average respiration
+      avg_r <- function () {
+        avg_r <- (input$kER * 1000 * input$depth) * (input$store_area/input$area) * (60 * 60 * 24/1000)
+        return(avg_r)
+      }
       
-      # Par
+      # Output the average respiration
+      output$avg_r_out <- renderPrint(
+        avg_r()
+      )
+      
+      ## Par
       
       # create PAR slider with renderUI
       output$par_slide <- renderUI(
@@ -1048,6 +1097,7 @@ if (interactive()) {
         print(par_fn())
       })
       
+      # Function to create the PAR Plot
       par_fn <- function() {
         do_us_ds() %>%
           ggplot(aes(x=datetime, y=par))+
@@ -1059,6 +1109,7 @@ if (interactive()) {
           theme_bw()
       }
       
+      # Download the PAR Plot
       output$download_par <- downloadHandler(
         filename = "par.png",
         content = function(file) {
@@ -1077,12 +1128,12 @@ if (interactive()) {
         
       })
       
-      
-      # plot Zoom Par
+      # plot Zoom PAR
       output$par_zoom <-  renderPlot({
         print(par_zoom_fn())
       })
       
+      # Function to create PAR detail visualization
       par_zoom_fn <- function() {
         do_us_ds() %>% 
           filter(as.POSIXct(datetime) >= input$par_time_sum[1] 
@@ -1095,6 +1146,7 @@ if (interactive()) {
           theme_bw()
       }
       
+      # download the PAR Detail View
       output$download_par_zoom <- downloadHandler(
         filename = "par_detail.png",
         content = function(file) {
@@ -1102,7 +1154,8 @@ if (interactive()) {
                  height = 8.5, units = 'in', dpi=320)
         })
       
-      # Gross Primary Production
+      ## Gross Primary Production
+      
       # create GPP slider with renderUI
       output$gpp_slide <- renderUI(
         sliderInput('gpp_time_sum', 'GPP Time Input:', 
@@ -1118,6 +1171,7 @@ if (interactive()) {
         print(gpp_fn())
       })
       
+      # Function creates the GPP Plot
       gpp_fn <- function() {
         do_us_ds() %>% 
           mutate(gpp = (((par*input$kpp)/input$depth)/1000)) %>% 
@@ -1130,6 +1184,7 @@ if (interactive()) {
           theme_bw()
       }
       
+      # Download the GPP Plot
       output$download_gpp <- downloadHandler(
         filename = "gpp.png",
         content = function(file) {
@@ -1142,6 +1197,7 @@ if (interactive()) {
         print(gpp_zoom_fn())
       })
       
+      # Function to create the GPP detail view
       gpp_zoom_fn <- function() {
         do_us_ds() %>% 
           mutate(gpp = (((par*input$kpp)/input$depth)/1000)) %>%
@@ -1155,6 +1211,7 @@ if (interactive()) {
           theme_bw()
       }
       
+      # Download the GPP Detail View
       output$download_gpp_zoom <- downloadHandler(
         filename = "gpp_detail.png",
         content = function(file) {
@@ -1174,6 +1231,22 @@ if (interactive()) {
         
       })
       
+      output$gpp_r_ratio <- renderPrint(
+        gpp_r_ratio()
+      )
+      
+      # Print the Average GPP to Average Respiration Ratio used for NPP
+      gpp_r_ratio <- function (){
+        gpp <- do_us_ds() %>% 
+          mutate(gpp = (((par*input$kpp)/input$depth)/1000)) %>%
+          select(gpp)
+        avg_gpp <- mean(gpp$gpp)
+        gpp_r_ratio <- avg_gpp/avg_r()
+        return(gpp_r_ratio)
+      }
+      
+      ## Temperature
+      
       # create Temp slider with renderUI
       output$temp_slide <- renderUI(
         sliderInput('temp_time_sum', 'Temperature Time Input:', 
@@ -1189,6 +1262,7 @@ if (interactive()) {
         print(temp_fn())
       })
       
+      # function to create temperature visualization
       temp_fn <- function () {
         do_us_ds() %>%
           ggplot(aes(x=datetime, y=avgtemp))+
@@ -1199,6 +1273,7 @@ if (interactive()) {
           theme_bw()
       }
       
+      # Download the temperature visualization
       output$download_temp <- downloadHandler(
         filename = "Tempurature.png",
         content = function(file) {
@@ -1216,6 +1291,13 @@ if (interactive()) {
       })
       
       ## DO Model
+      
+      # create the distance selection for DO
+      output$select_dis_do <- renderUI(
+        selectInput('do_distance', 'Model River Distance (in m)', 
+                    choices = colnames(do_model())[c(-1, -2)])
+      )
+      
       # create Do model slider with renderUI
       output$do_slide <- renderUI(
         sliderInput('do_time_sum', 'DO Time Input:', 
@@ -1231,6 +1313,7 @@ if (interactive()) {
         print(do_model_fn())
       })
       
+      # Function to create the DO Model plot
       do_model_fn <- function() {
         do_us_ds() %>% 
           ggplot()+
@@ -1247,6 +1330,7 @@ if (interactive()) {
           theme_classic()
       }
       
+      # Download the DO Model
       output$download_do_model <- downloadHandler(
         filename = "DissolvedOxygenModel.png",
         content = function(file) {
@@ -1260,6 +1344,7 @@ if (interactive()) {
         print(do_model_zoom_fn())
       })
       
+      # Function to create the DO Detail View
       do_model_zoom_fn <- function() {
         do_us_ds() %>%
           mutate(model = do_model()[[input$do_distance]]) %>% 
@@ -1276,6 +1361,7 @@ if (interactive()) {
           theme_classic()
       }
       
+      # Download the DO Detail View
       output$download_do_model_zoom <- downloadHandler(
         filename = "do_model_detail.png",
         content = function(file) {
@@ -1286,6 +1372,7 @@ if (interactive()) {
       # DO Model Stats for DO Summary input
       output$do_stats <- renderTable(digits = 3,{
         
+        # Store DO model distance as x
         x = input$do_distance
         
         # select the range of data to look at
@@ -1310,6 +1397,7 @@ if (interactive()) {
         print(domodelpred_fn())
       })
       
+      # Function to create the DO Prediction Plot
       domodelpred_fn <- function() {
         do_us_ds() %>% 
           left_join(do_model()) %>%  
@@ -1321,6 +1409,7 @@ if (interactive()) {
           theme_bw()
       }
       
+      # Print the Do Prediction Plot
       output$download_domodelpred <- downloadHandler(
         filename = "DissolvedOxygenModel_prediction.png",
         content = function(file) {
@@ -1359,6 +1448,7 @@ if (interactive()) {
         return(do_model_table)
       }
       
+      # Send the DO Model Table to the UI
       output$do_model_table <- DT::renderDataTable({
         print(do_table_fn())
       })
@@ -1389,6 +1479,11 @@ if (interactive()) {
         (nitrate_us_ds()$time_min[2]-nitrate_us_ds()$time_min[1])*60
       })
       
+      # Calculate the npp to gpp ratio
+      output$npp_gpp_ratio <- renderPrint({
+        print(gpp_r_ratio())
+      }) 
+      
       ## Nitrate Model
       # create Nitrate model slider with renderUI
       output$nitrate_slide <- renderUI(
@@ -1400,18 +1495,18 @@ if (interactive()) {
                     step = 1)
       ) 
       
+      # Select the Distance of the Nitrate model
       output$select_dis_nitrate <- renderUI(
         selectInput('nitrate_distance', 'Model River Distance (in m)', 
                     choices = colnames(nitrate_model())[c(-1,-2)])
       )
-      
-      
       
       # Nitrate model plot output
       output$nitrate_model <- renderPlot({
         print(nitrate_model_fn())
       })
       
+      # Nitrate plot function
       nitrate_model_fn <- function() {
         nitrate_us_ds() %>% 
           ggplot()+
@@ -1428,6 +1523,7 @@ if (interactive()) {
           theme_classic()
       }
       
+      # Download the Nitrate model
       output$download_nitrate_model <- downloadHandler(
         filename = "NitrateModel.png",
         content = function(file) {
@@ -1441,6 +1537,7 @@ if (interactive()) {
         print(nitrate_model_zoom_fn())
       })
       
+      # Function to Plot the Detail of Nitrate
       nitrate_model_zoom_fn <- function() {
         nitrate_us_ds() %>%
           mutate(model = nitrate_model()[[input$nitrate_distance]]) %>% 
@@ -1457,6 +1554,7 @@ if (interactive()) {
           theme_classic()
       }
       
+      # download the Nitrate plot detail view
       output$download_nitrate_model_zoom <- downloadHandler(
         filename = "nitrate_model_detail.png",
         content = function(file) {
@@ -1490,7 +1588,8 @@ if (interactive()) {
       output$nitratemodelpred <- renderPlot({
         print(nitratemodelpred_fn())
       })
-      
+     
+      # Function to plot the Nitrate model prediction 
       nitratemodelpred_fn <- function() {
         nitrate_us_ds() %>% 
           left_join(nitrate_model()) %>%  
@@ -1502,6 +1601,7 @@ if (interactive()) {
           theme_bw()
       }
       
+      # Download the Nitrate prediction plot
       output$download_nitratemodelpred <- downloadHandler(
         filename = "NitrateModel_prediction.png",
         content = function(file) {
@@ -1539,6 +1639,7 @@ if (interactive()) {
         return(nitrate_model_table)
       }
       
+      # Output the Nitrate Model Table
       output$nitrate_model_table <- DT::renderDataTable({
         print(nitrate_table_fn())
       })
