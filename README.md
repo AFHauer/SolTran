@@ -84,7 +84,7 @@ Template formatted data is uploaded into each of its respective data input locat
 **Example Data Sets**
 
 The Upper Clark Fork River Datasets from a 2020 study between Cattle Road sensors and
-Garison sensors is available in this repository.
+Garrison sensors is available in this repository.
 
 _Directories_
 
@@ -114,3 +114,22 @@ These are model estimated parameters. Used for all models:
 * Conservative Tracer
 * Dissolved Oxygen
 * Nitrate
+
+---
+
+## Conservative Tracer
+
+### Model Outputs
+
+Select the model location. Visualization shows upstream and downstream curves. Model
+will update based on model distance selected. Model summary statistics is output below the model selection.
+
+### Conservative Tracer Model Prediction Statistics
+
+Model prediction can be determined by setting the model to the downstream distance. This can be visualized on the Model Observed by Predicted visualization. Model Prediction Statistics are output to the right of the visualization.
+
+## Conservative Tracer Model Table
+
+The combined model input and observation values are output in a table.
+
+*Note: All visualizations and tables can be downloaded.* 
