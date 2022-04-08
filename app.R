@@ -586,7 +586,6 @@ if (interactive()) {
                 DT::dataTableOutput('do_model_table')
               )
             ) # Table fluidRow Close
-            
           ), # tabItem close
           
           ## Tab item Nitrate ##
@@ -612,7 +611,7 @@ if (interactive()) {
                 title = "Net Primary Production",
                 closable = FALSE,
                 width = 4,
-                numericInput('c_n_ratio', 'C:N Ratio (mol C: mol N):', value = 10),
+                numericInput('c_n_ratio', 'C:N Ratio (mol C: mol N):', value = .5),
                 p(HTML('<b>NPP:GPP Ratio:</b>')),
                 textOutput('npp_gpp_ratio'),
                 p(HTML('</br>')),
@@ -623,11 +622,13 @@ if (interactive()) {
               bs4Card(
                 title = "Nitrogen Uptake",
                 closable = FALSE,
-                width = 4
-                
+                width = 4,
+                p(HTML('<b>Average Associative Uptake</b>')),
+                textOutput('assoc_uptake')
               )
-              
             ), # fluidRow close
+            
+            # Nitrate Model
             h2('Nitrate Diel Model Output'),
             fluidRow(
               # Nitrate Model input
@@ -1484,6 +1485,12 @@ if (interactive()) {
         print(gpp_r_ratio())
       }) 
       
+      ## Uptake
+      # Associative Uptake
+      output$assoc_uptake <- renderPrint({
+        print(mean(nitrate_table_fn()$uptake_assoc))
+      })
+      
       ## Nitrate Model
       # create Nitrate model slider with renderUI
       output$nitrate_slide <- renderUI(
@@ -1635,7 +1642,8 @@ if (interactive()) {
       nitrate_table_fn <- function() {
         nitrate_model_table <- nitrate_us_ds() %>% 
           left_join(nitrate_model()) %>% 
-          select(datetime, time_min, us_station_obs, ds_station_obs, input$nitrate_distance)
+          mutate(uptake_assoc = (do_table_fn()$gpp/32)*(input$c_n_ratio/gpp_r_ratio())*14) %>% 
+          select(datetime, time_min, us_station_obs, ds_station_obs, input$nitrate_distance, uptake_assoc)
         return(nitrate_model_table)
       }
       
