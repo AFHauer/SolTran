@@ -14,7 +14,7 @@ This web application is developed in R shiny.
 
 ## Model Parameters and Data Input
 
-###Templates
+### Templates
 
 Data is input into the solute transport application in a series of templates available
 from the application.
@@ -31,6 +31,7 @@ _Conservative Tracer_
 |ds_sensor_obs|downstream sensor observation|float|1.0|
 
 _Dissolved Oxygen_
+
 |Variable|Data Explanation|Data type|Example|
 |--------|----------------|---------|-------|
 |datetime|date and time of observation|datetime| yyyy-mm-dd hh:mm:ss|
@@ -41,6 +42,7 @@ _Dissolved Oxygen_
 |avgtemp|average temperature|float|1.0|
 
 _Nitrate_
+
 |Variable|Data Explanation|Data type|Example|
 |--------|----------------|---------|-------|
 |datetime|date and time of observation|datetime| yyyy-mm-dd hh:mm:ss|
@@ -48,3 +50,67 @@ _Nitrate_
 |us_station_obs|upstream sensor observation|float|1.0|
 |ds_station_obs|downstream sensor observation|float|1.0|
 
+
+**Model Inputs**
+
+_Conservative Tracer Model_
+
+|Variable|Data Explanation|Data type|Example|
+|--------|----------------|---------|-------|
+|datetime|date and time of observation|datetime| yyyy-mm-dd hh:mm:ss|
+|time_min|change in time for each observation|integer|1|
+|Loc_*n*m|Conserve Trace Model at each model location where n = distance from US observation|float|1.0|
+
+
+_DO Model_
+
+|Variable|Data Explanation|Data type|Example|
+|--------|----------------|---------|-------|
+|datetime|date and time of observation|datetime| yyyy-mm-dd hh:mm:ss|
+|time_min|change in time for each observation|integer|1|
+|Loc_*n*m|DO model at each model location where n = distance from US observation|float|1.0|
+
+_Nitrate Model_
+
+|Variable|Data Explanation|Data type|Example|
+|--------|----------------|---------|-------|
+|datetime|date and time of observation|datetime| yyyy-mm-dd hh:mm:ss|
+|time_min|change in time for each observation|integer|1|
+|Loc_*n*m|nitrate model at each model location where n = distance from US observation|float|1.0|
+
+### Template Upload
+Template formatted data is uploaded into each of its respective data input location.
+
+**Example Data Sets**
+
+The Upper Clark Fork River Datasets from a 2020 study between Cattle Road sensors and
+Garison sensors is available in this repository.
+
+_Directories_
+
+* example data templates: contains example data from the 2020 study for the data input
+* example model data: contains example data model from each of the same 2020 study locations.
+
+### Model Parameters
+
+**Model Grid**
+
+This section is for future development. The section allows users to set the distance 
+between upstream and downstream observations. Users can then set the quantity of 
+modeled observations between the upstream and downstream observation. 
+
+**Measured Model Parameters**
+
+These are model parameters which are measured in the field. Used for all models:
+
+* Conservative Tracer
+* Dissolved Oxygen
+* Nitrate
+
+**Calculated Model Parameters**
+
+These are model estimated parameters. Used for all models:
+
+* Conservative Tracer
+* Dissolved Oxygen
+* Nitrate
