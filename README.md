@@ -12,6 +12,20 @@ This web application is developed in R shiny.
 
 ---
 
+To use the Reactive Solute Transport Dashboard (SolTran), clone the SolTran repo and run the app.R Shiny Application in R. Libraries required include:
+
+* library(shiny)
+* library(shinyjs)
+* library(htmlwidgets)
+* library(bs4Dash)
+* library(shinyTime)
+* library(tidyverse)
+* library(lubridate)
+* library(DT)
+* library(readr)
+
+---
+
 ## Model Parameters and Data Input
 
 ### Templates
