@@ -3,7 +3,7 @@
 
 This is a current work in progress for my MSBA Capstone Project at the University of Montana. 
 The primary idea is to develop a web application which allows for the uploading of hydrologic, 
-nutrient cycling, and limnologic repertory functions, and runs solute transportation models based on those data. 
+nutrient cycling, and limnologic respiratory functions, and runs solute transportation models based on those data. 
 
 This work largely works off models developed by Robert Runkel at the USGS in Denver, CO, 
 and Robert Hensley and Matthew Cohen at the University of Florida.
@@ -100,6 +100,46 @@ Template formatted data is uploaded into each of its respective data input locat
 The Upper Clark Fork River Datasets from a 2020 study between Cattle Road sensors and
 Garrison sensors is available in this repository.
 
+*Conservative Tracer* 
+
+|Model Parameters|Value|
+|----------------|-----|
+|Segment distance (x)|86.40 m|
+|Time (t)|1 min|
+
+UCFR Conditions from Cattle Road to Garrison September 25, 2020, until September 30, 2020
+
+*General Hydraulic Parameters*
+
+|Hydraulic Parameter|Value|
+|-------------------|-----|
+|Reach Length (L)|4320 m|
+|Discharge (Q)|6.1 m<sup>3</sup>/s|
+|Ave. Depth (d)|0.6 m|
+|Channel Area (A)|8.82 m<sup>2</sup>|
+|Storage Area (A<sub>s</sub>)|0.53 m<sup>2</sup>|
+|Dispersion (D)|30.32 m<sup>2</sup>/s|
+|Exchange Coeff (/alpha)|0.00004 1/s|
+
+*DO Reactive Parameters*
+
+|Reactive Parameter|Value|
+|------------------|-----|
+|Primary Production Rate Constant (k<sub>pp</sub>|0.000189 mg-O/J|
+|Respiration Rate Constant (k<sub>ER</sub>|0.0017 mg-O/m<sup>-2</sup>/d<sup>-1</sup>)|
+|Respiration Coeff (n<sub>ER</sub>)|0.2703 mg O<sup>2</sup>|/m<sup>2</sup>/d|
+|k|0.000042 1/s|
+|DO<sub>SAT</sub>|11.14 mg/L|
+
+*Nitrate Reactive Parameters*
+
+|Reactive Parameter|Value|
+|------------------|-----|
+|NPP:GPP|0.34 mol C: mol N|
+|C:N|6.63 mol C: mol N|
+|k<sub>D</sub>|0.00016|
+|n<sub>D</sub>|1.78|
+
 _Directories_
 
 * example data templates: contains example data from the 2020 study for the data input
@@ -112,8 +152,6 @@ _Directories_
 This section is for future development. The section allows users to set the distance 
 between upstream and downstream observations. Users can then set the quantity of 
 modeled observations between the upstream and downstream observation. 
-
-*Distances are given in meters (m)*
 
 **Measured Model Parameters**
 
