@@ -3,12 +3,25 @@
 
 This is a current work in progress for my MSBA Capstone Project at the University of Montana. 
 The primary idea is to develop a web application which allows for the uploading of hydrologic, 
-nutrient cycling, and limnologic respiratory functions, and runs solute transportation models based on those data. 
+nutrient cycling, and limnologic respiratory functions, and runs solute transportation models based on those data.
+
+Concepts and data from the Montana NSF EPSCoR Track 1 18-23 CREWS project and Dr. Rafael Feijo de Lima, University of Montana Ecosystems Lab W.A. Franke College of Forestry & Conservation.
 
 This work largely works off models developed by Robert Runkel at the USGS in Denver, CO, 
 and Robert Hensley and Matthew Cohen at the University of Florida.
 
+Hensley, Robert T., and Matthew J. Cohen. 2016. *"On the emergence of diel solute signals in flowing waters."* Water Resources Research (American Geophysical Union) 52: 759-772. doi:10.1002/2015WR017895.
+
+Runkel, Robert L. 1998. *One-Dimensional Transport with Inflow and Storage (OTIS): A solute transport model for streams and rivers.* Water-Resources Investigation Report 98-4018, U.S. Department of the Interior, U.S. Geological Survey, Denver: USGS, 1 - 73.
+
+
 This web application is developed in R shiny.
+
+___"This material is based upon work supported in part by the National Science Foundation EPSCoR Cooperative Agreement OIA-1757351"___
+
+*Additionally, the following wording should be included on all publications (including web pages) of material based on or developed under this award, except scientific articles or papers appearing in scientific, technical, or professional journals:*
+
+___"Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation."___
 
 ---
 
