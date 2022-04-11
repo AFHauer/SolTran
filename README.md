@@ -113,7 +113,7 @@ This section is for future development. The section allows users to set the dist
 between upstream and downstream observations. Users can then set the quantity of 
 modeled observations between the upstream and downstream observation. 
 
-* *Distances are given in meters (m)*
+*Distances are given in meters (m)*
 
 **Measured Model Parameters**
 
@@ -123,8 +123,9 @@ These are model parameters which are measured in the field. Used for all models:
 * Dissolved Oxygen
 * Nitrate
 
-* *Average Depth is in meters (m)*
-* *Discharge is in cubic meters per second ($m^3/s$)*
+
+*Average Depth is in meters (m)*
+*Discharge is in cubic meters per second ($m^3/s$)*
 
 **Calculated Model Parameters**
 
@@ -134,10 +135,11 @@ These are model estimated parameters. Used for all models:
 * Dissolved Oxygen
 * Nitrate
 
-* *Channel Area in square meters ($m^2$)*
-* *Storage Area in square meters ($m^2$)*
-* *Dispersion in square meters per second ($m^2/s$)*
-* *Exchange Coefficient in seconds (s)*
+
+*Channel Area in square meters ($m^2$)*
+*Storage Area in square meters ($m^2$)*
+*Dispersion in square meters per second ($m^2/s$)*
+*Exchange Coefficient in seconds (s)*
 
 ---
 
