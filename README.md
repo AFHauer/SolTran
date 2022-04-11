@@ -200,7 +200,7 @@ Model prediction can be determined by setting the model to the downstream distan
 
 ### Conservative Tracer Model Table
 
-The combined model input and observation values are output in a table.
+The combined model input and observation values are output in a table. Select the desired model output for the table.
 
 ---
 
@@ -222,8 +222,34 @@ Input the Respiration Rate Constant (k<sub>ER</sub>). Average Respiration is cal
 
 ### Photosynthetically Active Radiation (PAR)
 
-PAR is input on the Dissolved Oxygen data input, template available on the Model Parameters page. Adjust the PAR slider input to see PAR Statistics and Detail Visualization for datetime between input slider range. Red vertical lines on the overall PAR visualization will adjust to display datetime range.
+PAR is input on the Dissolved Oxygen data input, template available on the Model Parameters page. Adjust the PAR slider input to see PAR Statistics and Detail Visualization for datetime range. Red vertical lines on the overall PAR visualization will adjust to display the input datetime range.
 
 ### Gross Primary Production (GPP)
 
+GPP is calculated using PAR, k<sub>pp</sub>, and ave. depth. Adjust the GPP slider input to see GPP Statistics and Detail Visualization for datetime range. Red vertical lines on the overall GPP visualization will adjust to display the input datetime range.
 
+*GPP = ((par x k<sub>pp</sub>)/depth))/1000*
+
+*numeric value, 1000, for unit conversion*
+
+### Water Temperature
+
+Water temperature is given in degrees C and is the average temperature for the observed and modeled river segment. Temperature is input on the Dissolved Oxygen data input, template available on the Model Parameters page. Adjust the Temperature Time Input slider to see specific temperature for given datetime. 
+
+### Dissolved Oxygen Diel Model Output
+
+Input the desired model location distance from the selection box and datetime range from the datetime slider input. Dissolved Oxygen statistics and detailed visualization will be output for the selected model and datetime range. DO overall visualization displays 2 vertical red lines which indicate data selection.
+
+### Dissolved Oxygen Model Prediction Statistics
+
+To see the DO Model Observed by Predicted model performance set the DO model input to the downstream observation distance. The DO model observed by predicted and DO model prediction statistics will update to the input model.
+
+### Dissolved Oxygen Model Table
+
+The combined model input and observation values are output in a table. Select the desired model output for the table.
+
+---
+
+## Nitrate
+
+*Note: All visualizations and tables can be downloaded.* 
