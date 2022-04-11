@@ -137,11 +137,11 @@ These are model estimated parameters. Used for all models:
 * Nitrate
 
 
-*Channel Area in square meters (m^2)*
+*Channel Area in square meters (m<sup>2</sup>)*
 
-*Storage Area in square meters (m^2)*
+*Storage Area in square meters (m<sup>2</sup>)*
 
-*Dispersion in square meters per second (m^2/s)*
+*Dispersion in square meters per second (m<sup>2</sup>/s)*
 
 *Exchange Coefficient in seconds (s)*
 
