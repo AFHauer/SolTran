@@ -137,7 +137,7 @@ These are model estimated parameters. Used for all models:
 * Nitrate
 
 
-*Channel Area in square meters ($m^2$)*
+*Channel Area in square meters (mU+00B2)*
 
 *Storage Area in square meters ($m^2$)*
 
