@@ -187,6 +187,8 @@ These are model estimated parameters. Used for all models:
 
 ## Conservative Tracer
 
+*Note: All visualizations and tables can be downloaded.* 
+
 ### Model Outputs
 
 Select the model location. Visualization shows upstream and downstream curves. Model
@@ -200,4 +202,28 @@ Model prediction can be determined by setting the model to the downstream distan
 
 The combined model input and observation values are output in a table.
 
+---
+
+## Dissolved Oxygen
+
 *Note: All visualizations and tables can be downloaded.* 
+
+### Reactive Parameters
+
+Refresh Page data when new data is loaded into the SolTran Application. This refresh will update all data inputs to the current data input. 
+
+Input the k<sub>pp</sub> range and adjust the slider to enter the Primary Production Rate Constant. *This is an exploratory feature to future model data entry.*
+
+Input the Respiration Rate Constant (k<sub>ER<sub>). Average Respiration is calculate using the respiration rate constant, average depth, storage area, and area. 
+
+*Average Respiration = (k<sub>ER</sub> x depth x 1000) x (A<sub>s</sub>/A) x 24000*
+
+*numeric values, 1000 & 24000, for unit conversion*
+
+### Photosynthetically Active Radiation (PAR)
+
+PAR is input on the Dissolved Oxygen data input, template available on the Model Parameters page. Adjust the PAR slider input to see PAR Statistics and Detail Visualization for datetime between input slider range. Red vertical lines on the overall PAR visualization will adjust to display datetime range.
+
+### Gross Primary Production (GPP)
+
+
