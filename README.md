@@ -212,9 +212,9 @@ The combined model input and observation values are output in a table.
 
 Refresh Page data when new data is loaded into the SolTran Application. This refresh will update all data inputs to the current data input. 
 
-Input the k<sub>pp</sub> range and adjust the slider to enter the Primary Production Rate Constant. *This is an exploratory feature to future model data entry.*
+Input the k<sub>pp</sub> range and adjust the slider to enter the Primary Production Rate Constant. *This is an exploratory feature for future model data entry.*
 
-Input the Respiration Rate Constant (k<sub>ER<sub>). Average Respiration is calculate using the respiration rate constant, average depth, storage area, and area. 
+Input the Respiration Rate Constant (k<sub>ER</sub>). Average Respiration is calculate using the respiration rate constant, average depth, storage area, and area. 
 
 *Average Respiration = (k<sub>ER</sub> x depth x 1000) x (A<sub>s</sub>/A) x 24000*
 
