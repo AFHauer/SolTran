@@ -126,7 +126,7 @@ These are model parameters which are measured in the field. Used for all models:
 
 *Average Depth is in meters (m)*
 
-*Discharge is in cubic meters per second ($m^3/s$)*
+*Discharge is in cubic meters per second (m<sup>3</sup>/s)*
 
 **Calculated Model Parameters**
 
@@ -137,11 +137,11 @@ These are model estimated parameters. Used for all models:
 * Nitrate
 
 
-*Channel Area in square meters (m U+00B2)*
+*Channel Area in square meters (m^2)*
 
-*Storage Area in square meters ($m^2$)*
+*Storage Area in square meters (m^2)*
 
-*Dispersion in square meters per second ($m^2/s$)*
+*Dispersion in square meters per second (m^2/s)*
 
 *Exchange Coefficient in seconds (s)*
 
