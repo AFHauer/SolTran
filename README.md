@@ -1,5 +1,5 @@
-# SolTran
-***Solute Transport Modeling in R Shiny Application***
+# SolTran Web Application
+***Solute Transport Modeling R Shiny Application***
 
 This is a current work in progress for my MSBA Capstone Project at the University of Montana. 
 The primary idea is to develop a web application which allows for the uploading of hydrologic, 
@@ -198,7 +198,7 @@ will update based on model distance selected. Model summary statistics is output
 
 Model prediction can be determined by setting the model to the downstream distance. This can be visualized on the Model Observed by Predicted visualization. Model Prediction Statistics are output to the right of the visualization.
 
-## Conservative Tracer Model Table
+### Conservative Tracer Model Table
 
 The combined model input and observation values are output in a table.
 
