@@ -468,7 +468,7 @@ if (interactive()) {
             ), # fluidRow close
             
             ## Temp Output ##
-            h2('Water Tempurature (C)'),
+            h2('Water Temperature (C)'),
             
             fluidRow(
               column(4,
@@ -1276,7 +1276,7 @@ if (interactive()) {
       
       # Download the temperature visualization
       output$download_temp <- downloadHandler(
-        filename = "Tempurature.png",
+        filename = "Temperature.png",
         content = function(file) {
           ggsave(file, plot = temp_fn(), width = 11, 
                  height = 8.5, units = 'in', dpi=320)
