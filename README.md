@@ -266,3 +266,33 @@ The combined model input and observation values are output in a table. Select th
 ## Nitrate
 
 *Note: All visualizations and tables can be downloaded.* 
+
+### Reactive Parameters
+
+Refresh Page data when new data is loaded into the SolTran Application. This refresh will update all data inputs to the current data input.
+
+Input the C:N Ratio. This can be calculated or estimated with known values. 
+
+The NPP:GPP Ratio is set to equal the GPP to Respiration Ratio. 
+
+*GPP:ER Ratio = Average GPP/Average Respiration*
+
+___NOTE: GPP and Respiration Must be calculated to find the GPP:ER Ratio or the NPP:GPP Ratio.___
+
+Average Associative Uptake is calculated from the Associative Uptake value. This value is available in the Nitrate Model Table at the bottom of the Nitrate page. 
+
+*Associative Uptake (U<sub>A</sub>) = ((GPP/32) x (C:N Ratio/GPP:NPP Ratio)) x 14*
+
+*numeric value, 32 & 14, for unit conversion*
+
+### Nitrate Diel Model Output
+
+Input the desired model location distance from the selection box and datetime range from the datetime slider input. Nitrate statistics and detailed visualization will be output for the selected model and datetime range. Nitrate overall visualization displays 2 vertical red lines which indicate data selection.
+
+### Nitrate Model Prediction Statistics
+
+To see the Nitrate Model Observed by Predicted model performance set the Nitrate model input to the downstream observation distance. The Nitrate model observed by predicted and Nitrate model prediction statistics will update to the input model.
+
+### Nitrate Model Table
+
+The combined model input and observation values are output in a table. Select the desired model output for the table.
