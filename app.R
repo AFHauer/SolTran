@@ -197,7 +197,7 @@ if (interactive()) {
                        width = 12,
                        p('Input the average depth in meters for the length of river you are modeling. Input the average river discharge for the time you are modeling.'),
                        numericInput('depth', 'Average Depth (m)', value = 5),
-                       numericInput('Q', 'Discharge (in m^3/s)', value = 5)
+                       numericInput('Q', 'Discharge (m^3/s)', value = 5)
                      ),
               ),# column close
               
@@ -208,10 +208,10 @@ if (interactive()) {
                        title = "Calculated Model Parameters",
                        closable = FALSE,
                        width = 12,
-                       numericInput('area', 'Channel Area (in m^2)', value = 10),
-                       numericInput('store_area', 'Storage Area (in m^2)', value = 0.5),
-                       numericInput('disp', 'Dispersion (in m^2/s)', value = 10),
-                       numericInput('alpha', 'Exchange Coefficient', value = 0.00001)
+                       numericInput('area', 'Channel Area (m^2)', value = 10),
+                       numericInput('store_area', 'Storage Area (m^2)', value = 0.5),
+                       numericInput('disp', 'Dispersion (m^2/s)', value = 10),
+                       numericInput('alpha', 'Exchange Coefficient (1/s)', value = 0.00001)
                      ),
               ) # column close
             ), # fluidRow close
@@ -362,10 +362,10 @@ if (interactive()) {
                 width = 4,
                 closable = FALSE,
                 p('Respiration Rate Constant'),
-                numericInput('kER', 'kER (g-O/m^-2/d^-1):', value = 0.002),
+                numericInput('kER', 'kER (mg-O/m^-2/d^-1):', value = 0.002),
                 #p('Respiration Rate Exponent'), # future model implementation
                 #numericInput('nER', 'nER:', value = .3), # future model implementation
-                p(HTML('<b>Average Respiration, (g-O2/m^2/d)</b>')),
+                p(HTML('<b>Average Respiration, (mg-O2/m^2/d)</b>')),
                 textOutput('avg_r_out')
               )
             ), #fluidRow close
