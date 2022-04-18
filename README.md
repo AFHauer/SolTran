@@ -279,7 +279,7 @@ The NPP:GPP Ratio is set to equal the GPP to Respiration Ratio.
 
 ___NOTE: GPP and Respiration Must be calculated to find the GPP:ER Ratio or the NPP:GPP Ratio.___
 
-Average Associative Uptake is calculated from the Associative Uptake value. This value is available in the Nitrate Model Table at the bottom of the Nitrate page. 
+*Average Associative Uptake* is calculated from the Associative Uptake value. This value is available in the Nitrate Model Table at the bottom of the Nitrate page. The avg. associative uptake value is given in mg-N/m<sup>2</sup>/day.
 
 *Associative Uptake (U<sub>A</sub>) = ((GPP/32) x (C:N Ratio/GPP:NPP Ratio)) x 14*
 
