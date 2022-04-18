@@ -623,7 +623,7 @@ if (interactive()) {
                 title = "Nitrogen Uptake",
                 closable = FALSE,
                 width = 4,
-                p(HTML('<b>Average Associative Uptake</b>')),
+                p(HTML('<b>Average Associative Uptake (mgN/m^2/day)</b>')),
                 textOutput('assoc_uptake')
               )
             ), # fluidRow close
