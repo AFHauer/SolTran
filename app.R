@@ -1662,4 +1662,4 @@ if (interactive()) {
       
     } # server functions close
   ) # shinyApp close
-} # if iteractive close
+} # if interactive close
