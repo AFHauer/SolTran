@@ -19,8 +19,6 @@ This web application is developed in R shiny.
 
 ___"This material is based upon work supported in part by the National Science Foundation EPSCoR Cooperative Agreement OIA-1757351"___
 
-*Additionally, the following wording should be included on all publications (including web pages) of material based on or developed under this award, except scientific articles or papers appearing in scientific, technical, or professional journals:*
-
 ___"Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation."___
 
 ---
