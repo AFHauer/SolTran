@@ -1,19 +1,32 @@
 # SolTran Web Application
 ***Solute Transport Modeling R Shiny Application***
 
-This is a current work in progress for my MSBA Capstone Project at the University of Montana. 
-The primary idea is to develop a web application which allows for the uploading of hydrologic, 
-nutrient cycling, and limnologic respiratory functions, and runs solute transportation models based on those data.
+Andrew Hauer
 
-Concepts and data from the Montana NSF EPSCoR Track 1 18-23 CREWS project and Dr. Rafael Feijo de Lima, University of Montana Ecosystems Lab W.A. Franke College of Forestry & Conservation.
+*Masters of Science in Business Analytics (MSBA)*
+*University of Montana*
 
-This work largely works off models developed by Robert Runkel at the USGS in Denver, CO, 
-and Robert Hensley and Matthew Cohen at the University of Florida.
 
-Hensley, Robert T., and Matthew J. Cohen. 2016. *"On the emergence of diel solute signals in flowing waters."* Water Resources Research (American Geophysical Union) 52: 759-772. doi:10.1002/2015WR017895.
+__PROJECT ABSTRACT__
+This project involved designing and building a web application for understanding and analyzing reactive solute transport in the Clark Fork River of western Montana. Running water ecosystems (i.e., streams and rivers) are the primary means by which materials are moved from the continents to the oceans. Solutes, as a significant proportion of stream transport and retention, are elements or compounds that are dissolved in the water. Understanding how solutes flow, react and cycle within and between biofilm surfaces is a fundamental component of stream ecology. In this study and modeling effort, I developed a reactive solute transport web application using the dashboard design and modeling tools provided in R and the Shiny R package. For this project specific solutes, rhodamine dye, a conservative tracer, dissolved oxygen, and nitrogen in the form of nitrate were examined in a riverine waterway. The reactive solute transport tool, built in RStudio, is a data visualization tool for use by hydrologists, biologists, and biogeochemists working on solute transport and metabolism research in river and stream ecosystems. 
 
-Runkel, Robert L. 1998. *One-Dimensional Transport with Inflow and Storage (OTIS): A solute transport model for streams and rivers.* Water-Resources Investigation Report 98-4018, U.S. Department of the Interior, U.S. Geological Survey, Denver: USGS, 1 - 73.
+__APPLICATION CONCEPTUAL MODEL__
+![SolTran conceptual model](conceptual_model.png)
 
+__PROJECT REFERENCES__
+
+* Appling, Alison P., Robert O. Hall, Maite Arroita, and Charles B. Yackulic. 2018. "Overcoming Equifinality: Leveraging Long Time Series for Stream Metabolism Estimation." Journal of Geophysical Research: Biogeosciences 123 (2). doi:10.1002/2017JG004140.
+* Bencala, Kenneth E., and Roy A. Walters. 1983. "Simulation of Solute Transport in a Mountain Pool-and-Riffle Stream: A Transient Storage Model." Water Resources Research 19 (3): 718-724. doi:10.1029/WR019i003p00718.
+* Hensley, Robert T., and Matthew J. Cohen. 2016. "On the emergence of diel solute signals in flowing waters." Water Resources Research (American Geophysical Union) 52: 759-772. doi:10.1002/2015WR017895.
+* Runkel, Robert L. 1998. One-Dimensional Transport with Inflow and Storage (OTIS): A solute transport model for streams and rivers. Water-Resources Investigation Report 98-4018, U.S. Department of the Interior, U.S. Geological Survey, Denver: USGS, 1 - 73.
+* Stream Solute Workshop. 1990. "Concepts and Methods for Assessing Solute Dynamics in Stream Ecosystems." Journal of the North American Benthological Society 95-119.
+* Tank, Jennifer L., Melody J. Bernot, and Emma J. Rosi-Marshall. 2007. "Nitrogen Limitation and Uptake." In Methods in Stream Ecology (Second Edition), by F. Richard Hauer and Gary A. Lamberti, 213-238. Burlington, MA: Elsevier.
+* Webster, Jackson R., and H. Maurice Valett. 2007. "Solute Dynamics." In Methods in Stream Ecology (Second Edition), by F. Richard Hauer and Gary A. Lamberti, 169-185. Burlington, MA: Elsevier.
+
+__SPECIAL THANKS__
+* Dr. Rafael Feijó del Lima, Postdoctoral Researcher at the University of Montana, for his sharing of data and guidance in this capstone project. for Master of Science in Business Analytics.
+* Dr. H. Maurice Valett, Professor of Systems Ecology at the University of Montana, for sharing his time and guidance in organizing this project.
+* Dr. Robert Payn, Associate Professor and Hydrologist at Montana State University, for his help in putting together the models for the next version of the SolTran web application.
 
 This web application is developed in R shiny.
 
