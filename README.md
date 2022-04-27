@@ -3,6 +3,8 @@
 
 Andrew Hauer
 
+*Spring 2022 Capstone Project*
+
 *Masters of Science in Business Analytics (MSBA), University of Montana*
 
 
