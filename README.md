@@ -9,6 +9,7 @@ Andrew Hauer
 
 
 __PROJECT ABSTRACT__
+
 This project involved designing and building a web application for understanding and analyzing reactive solute transport in the Clark Fork River of western Montana. Running water ecosystems (i.e., streams and rivers) are the primary means by which materials are moved from the continents to the oceans. Solutes, as a significant proportion of stream transport and retention, are elements or compounds that are dissolved in the water. Understanding how solutes flow, react and cycle within and between biofilm surfaces is a fundamental component of stream ecology. In this study and modeling effort, I developed a reactive solute transport web application using the dashboard design and modeling tools provided in R and the Shiny R package. For this project specific solutes, rhodamine dye, a conservative tracer, dissolved oxygen, and nitrogen in the form of nitrate were examined in a riverine waterway. The reactive solute transport tool, built in RStudio, is a data visualization tool for use by hydrologists, biologists, and biogeochemists working on solute transport and metabolism research in river and stream ecosystems. 
 
 __APPLICATION CONCEPTUAL MODEL__
