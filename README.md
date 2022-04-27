@@ -3,8 +3,7 @@
 
 Andrew Hauer
 
-*Masters of Science in Business Analytics (MSBA)*
-*University of Montana*
+*Masters of Science in Business Analytics (MSBA), University of Montana*
 
 
 __PROJECT ABSTRACT__
@@ -28,7 +27,7 @@ __SPECIAL THANKS__
 * Dr. H. Maurice Valett, Professor of Systems Ecology at the University of Montana, for sharing his time and guidance in organizing this project.
 * Dr. Robert Payn, Associate Professor and Hydrologist at Montana State University, for his help in putting together the models for the next version of the SolTran web application.
 
-This web application is developed in R shiny.
+__NSF GRANT ACKNOWLEDGEMENT__
 
 ___"This material is based upon work supported in part by the National Science Foundation EPSCoR Cooperative Agreement OIA-1757351"___
 
